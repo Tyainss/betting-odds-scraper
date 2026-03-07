@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Optional
 
 
 OutputFormat = Literal["csv", "json"]
@@ -44,3 +44,25 @@ class BetanoSiteConfig:
     datetime: DateTimeConfig
     default_market: str
     targets: tuple[BetanoTarget, ...]
+
+
+
+@dataclass(frozen=True)
+class OddsRow:
+    site: str
+    country: str
+    league: str
+    target_name: str
+    region_id: int
+    league_id: int
+    source_url: str
+    scraped_at: str
+    live: bool
+    match_date: Optional[str]
+    match_time: Optional[str]
+    fixture_date: Optional[str]
+    home_team: str
+    away_team: str
+    odd_1: float
+    odd_x: float
+    odd_2: float

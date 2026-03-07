@@ -1,5 +1,6 @@
 import re
 import time
+from pathlib import Path
 
 from selenium.webdriver.common.by import By
 
@@ -20,6 +21,7 @@ class BetanoScraper:
         self.driver = driver
         self.site_config = site_config
         self.logger = get_logger(__name__)
+        self.debug_dir = Path("data/raw/debug")
 
     def scrape_target(self, target):
         url = build_betano_league_url(
@@ -29,7 +31,12 @@ class BetanoScraper:
         
         self.logger.info("Scraping target=%s url=%s", target.name, url)
 
-        self.driver.get(url)
+        try:
+            self.driver.get(url)
+        except Exception:
+            self._save_debug_artifacts(target.name)
+            raise
+
         time.sleep(self.site_config.browser.wait_after_load_seconds)
 
         self._dismiss_overlays()
@@ -49,8 +56,12 @@ class BetanoScraper:
             parse_match_block(
                 text=block,
                 site_name=self.site_config.site,
+                target_name=target.name,
                 country_name=target.country_slug,
                 league_name=target.name,
+                region_id=target.region_id,
+                league_id=target.league_id,
+                source_url=url,
                 source_timezone=self.site_config.datetime.timezone,
             )
             for block in valid_blocks
@@ -58,7 +69,7 @@ class BetanoScraper:
 
         self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
 
-        return parsed_rows
+        return [row.__dict__ for row in parsed_rows]
 
     def _dismiss_overlays(self):
         for xpath in COOKIE_ACCEPT_XPATHS:
@@ -91,3 +102,17 @@ class BetanoScraper:
                 continue
 
         return blocks
+    
+
+    def _save_debug_artifacts(self, target_name):
+        self.debug_dir.mkdir(parents=True, exist_ok=True)
+
+        screenshot_path = self.debug_dir / f"{target_name}.png"
+        html_path = self.debug_dir / f"{target_name}.html"
+
+        try:
+            self.driver.save_screenshot(str(screenshot_path))
+            html_path.write_text(self.driver.page_source, encoding="utf-8")
+            self.logger.info("Saved debug artifacts for target=%s", target_name)
+        except Exception:
+            self.logger.exception("Failed to save debug artifacts for target=%s", target_name)

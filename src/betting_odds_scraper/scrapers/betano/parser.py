@@ -2,6 +2,7 @@ import re
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
+from betting_odds_scraper.models import OddsRow
 
 ODD_PATTERN = re.compile(r"\d{1,2}[.,]\d{2}")
 DATE_PATTERN = re.compile(r"\d{2}/\d{2}")
@@ -38,13 +39,31 @@ def _get_zoneinfo(timezone_name):
 
     return ZoneInfo(timezone_name)
 
+def _infer_fixture_year(date_str, source_tz):
+    now = datetime.now(source_tz)
+    candidate = datetime.strptime(
+        f"{now.year}-{date_str}",
+        "%Y-%d/%m",
+    ).date()
+
+    previous_year_candidate = candidate.replace(year=now.year - 1)
+    next_year_candidate = candidate.replace(year=now.year + 1)
+
+    candidates = [
+        previous_year_candidate,
+        candidate,
+        next_year_candidate,
+    ]
+
+    return min(candidates, key=lambda value: abs((value - now.date()).days)).year
+
 
 def _parse_fixture_datetime(date_str, time_str, source_timezone):
     source_tz = _get_zoneinfo(source_timezone)
 
-    current_year = datetime.now(source_tz).year
+    fixture_year = _infer_fixture_year(date_str, source_tz)
     local_dt = datetime.strptime(
-        f"{current_year}-{date_str} {time_str}",
+        f"{fixture_year}-{date_str} {time_str}",
         "%Y-%d/%m %H:%M",
     ).replace(tzinfo=source_tz)
 
@@ -56,28 +75,36 @@ def _parse_fixture_datetime(date_str, time_str, source_timezone):
 def parse_match_block(
     text,
     site_name,
+    target_name,
     country_name,
     league_name,
     source_timezone,
+    region_id,
+    league_id,
+    source_url,
 ):
     lines = normalize_text_block(text)
 
     if lines[0] == "AO VIVO":
-        return {
-            "site": site_name,
-            "country": country_name,
-            "league": league_name,
-            "scraped_at": datetime.now(timezone.utc).isoformat(),
-            "live": True,
-            "match_date": None,
-            "match_time": None,
-            "fixture_date": None,
-            "home_team": lines[1],
-            "away_team": lines[2],
-            "odd_1": float(lines[4].replace(",", ".")),
-            "odd_x": float(lines[6].replace(",", ".")),
-            "odd_2": float(lines[8].replace(",", ".")),
-        }
+        return OddsRow(
+            site=site_name,
+            country=country_name,
+            league=league_name,
+            target_name=target_name,
+            region_id=region_id,
+            league_id=league_id,
+            source_url=source_url,
+            scraped_at=datetime.now(timezone.utc).isoformat(),
+            live=True,
+            match_date=None,
+            match_time=None,
+            fixture_date=None,
+            home_team=lines[1],
+            away_team=lines[2],
+            odd_1=float(lines[4].replace(",", ".")),
+            odd_x=float(lines[6].replace(",", ".")),
+            odd_2=float(lines[8].replace(",", ".")),
+        )
 
     fixture_dt_utc = _parse_fixture_datetime(
         date_str=lines[0],
@@ -85,18 +112,22 @@ def parse_match_block(
         source_timezone=source_timezone,
     )
 
-    return {
-        "site": site_name,
-        "country": country_name,
-        "league": league_name,
-        "scraped_at": datetime.now(timezone.utc).isoformat(),
-        "live": False,
-        "match_date": fixture_dt_utc.date().isoformat(),
-        "match_time": fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes"),
-        "fixture_date": fixture_dt_utc.isoformat(),
-        "home_team": lines[2],
-        "away_team": lines[3],
-        "odd_1": float(lines[5].replace(",", ".")),
-        "odd_x": float(lines[7].replace(",", ".")),
-        "odd_2": float(lines[9].replace(",", ".")),
-    }
+    return OddsRow(
+        site=site_name,
+        country=country_name,
+        league=league_name,
+        target_name=target_name,
+        region_id=region_id,
+        league_id=league_id,
+        source_url=source_url,
+        scraped_at=datetime.now(timezone.utc).isoformat(),
+        live=False,
+        match_date=fixture_dt_utc.date().isoformat(),
+        match_time=fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes"),
+        fixture_date=fixture_dt_utc.isoformat(),
+        home_team=lines[2],
+        away_team=lines[3],
+        odd_1=float(lines[5].replace(",", ".")),
+        odd_x=float(lines[7].replace(",", ".")),
+        odd_2=float(lines[9].replace(",", ".")),
+    )

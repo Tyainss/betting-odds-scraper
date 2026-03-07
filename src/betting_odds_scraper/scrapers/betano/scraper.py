@@ -3,6 +3,8 @@ import time
 from pathlib import Path
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.parser import (
@@ -11,6 +13,7 @@ from betting_odds_scraper.scrapers.betano.parser import (
 )
 from betting_odds_scraper.scrapers.betano.selectors import (
     COOKIE_ACCEPT_XPATHS,
+    PAGE_READY_XPATHS,
     MATCH_BLOCKS_XPATH,
 )
 from betting_odds_scraper.scrapers.betano.url_builder import build_betano_league_url
@@ -39,9 +42,10 @@ class BetanoScraper:
             self._save_debug_artifacts(target.name)
             raise
 
-        time.sleep(self.site_config.browser.wait_after_load_seconds)
+        self._wait_for_page_ready(target.name)
 
         self._dismiss_overlays()
+        self._wait_for_page_ready(target.name)
         time.sleep(self.site_config.browser.wait_after_overlay_dismiss_seconds)
 
         try:
@@ -54,6 +58,13 @@ class BetanoScraper:
                 len(raw_blocks),
                 len(valid_blocks),
             )
+
+            if not valid_blocks:
+                self.logger.warning("Target=%s has zero valid blocks; saving debug artifacts", target.name)
+                self._save_debug_artifacts(target.name)
+                self.driver.refresh()
+                self._wait_for_page_ready(target.name)
+                valid_blocks = [block for block in self._get_candidate_blocks() if is_valid_match_block(block)]
 
             parsed_rows = [
                 parse_match_block(
@@ -86,6 +97,24 @@ class BetanoScraper:
                 time.sleep(1)
             except Exception:
                 continue
+
+    def _wait_for_page_ready(self, target_name, timeout=25):
+        wait = WebDriverWait(self.driver, timeout)
+
+        last_error = None
+        for xpath in PAGE_READY_XPATHS:
+            try:
+                wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+                self.logger.info("Page ready for target=%s using xpath=%s", target_name, xpath)
+                return
+            except Exception as exc:
+                last_error = exc
+                continue
+
+        self.logger.warning("Timed out waiting for page readiness for target=%s", target_name)
+        self._save_debug_artifacts(target_name)
+        if last_error:
+            raise last_error
 
     def _get_candidate_blocks(self):
         elements = self.driver.find_elements(By.XPATH, MATCH_BLOCKS_XPATH)

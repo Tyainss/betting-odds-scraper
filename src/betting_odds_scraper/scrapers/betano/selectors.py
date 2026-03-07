@@ -19,3 +19,10 @@ MATCH_BLOCKS_XPATH = """
     and .//*[contains(text(), '2')]
 ]
 """
+
+PAGE_READY_XPATHS = [
+    "//*[contains(text(), 'Resultado do Jogo')]",
+    "//*[contains(text(), 'AO VIVO')]",
+    "//*[contains(text(), '1')]",
+    "//*[contains(text(), 'X')]",
+]

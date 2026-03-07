@@ -91,22 +91,23 @@ def run_betano_scrape(
 
     selected_targets = _filter_targets(site_config, set(target_names or []))
 
-    driver = build_chrome_driver(
-        browser_config=site_config.browser,
-        chromedriver_path=chromedriver_path,
-        headless_override=headless_override,
-    )
+    all_rows = []
+    output_paths = []
+    failed_targets = []
 
-    try:
-        scraper = BetanoScraper(
-            driver=driver,
-            site_config=site_config,
+    for target in selected_targets:
+        driver = build_chrome_driver(
+            browser_config=site_config.browser,
+            chromedriver_path=chromedriver_path,
+            headless_override=headless_override,
         )
 
-        all_rows = []
-        output_paths = []
-        failed_targets = []
-        for target in selected_targets:
+        try:
+            scraper = BetanoScraper(
+                driver=driver,
+                site_config=site_config,
+            )
+
             try:
                 target_rows = _scrape_target_with_retries(
                     scraper=scraper,
@@ -139,8 +140,8 @@ def run_betano_scrape(
                     target_output_path,
                 )
 
-    finally:
-        driver.quit()
+        finally:
+            driver.quit()
 
     output_path = _build_output_path(
         base_dir=output_dir,

@@ -1,3 +1,6 @@
+# CSV file containing the scraped data
+*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

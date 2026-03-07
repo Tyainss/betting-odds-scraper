@@ -1,0 +1,35 @@
+site: betano
+base_url: "https://www.betano.pt"
+
+browser:
+  headless: false
+  language: "pt-PT"
+  page_load_timeout_seconds: 60
+  wait_after_load_seconds: 8
+  wait_after_overlay_dismiss_seconds: 2
+
+output:
+  default_format: "csv"
+  allowed_formats:
+    - "csv"
+    - "json"
+
+datetime:
+  timezone: "UTC"
+
+default_market: "matchresult"
+
+targets:
+  - name: "primeira_liga"
+    sport_slug: "futebol"
+    country_slug: "portugal"
+    region_id: 11382
+    league_id: 17083
+    market: "matchresult"
+
+  - name: "liga_2"
+    sport_slug: "futebol"
+    country_slug: "portugal"
+    region_id: 11382
+    league_id: 17385
+    market: "matchresult"

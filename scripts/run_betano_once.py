@@ -1,5 +1,6 @@
 import argparse
 
+from betting_odds_scraper.logger import configure_logging
 from betting_odds_scraper.pipelines.scrape_betano import run_betano_scrape
 
 
@@ -37,11 +38,55 @@ def parse_args():
         default=None,
         help="Target name from config. Repeat to run multiple targets.",
     )
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--headed",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=1,
+    )
+    parser.add_argument(
+        "--retry-delay-seconds",
+        type=int,
+        default=2,
+    )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+    )
+    parser.add_argument(
+        "--log-file",
+        default=None,
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    headless_override = None
+
+    if args.headless and args.headed:
+        raise ValueError("Use either --headless or --headed, not both")
+
+    if args.headless:
+        headless_override = True
+    elif args.headed:
+        headless_override = False
+
+    configure_logging(
+        log_level=args.log_level,
+        log_file_path=args.log_file,
+    )
 
     result = run_betano_scrape(
         config_path=args.config_path,
@@ -50,6 +95,10 @@ def main():
         chromedriver_path=args.chromedriver_path,
         split_by_target=args.split_by_target,
         target_names=args.targets,
+        headless_override=headless_override,
+        continue_on_error=args.continue_on_error,
+        retries=args.retries,
+        retry_delay_seconds=args.retry_delay_seconds,
     )
 
     print(f"Rows scraped: {len(result['rows'])}")
@@ -59,6 +108,11 @@ def main():
         print("Saved target outputs to:")
         for path in result["target_output_paths"]:
             print(f" - {path}")
+
+    if result["failed_targets"]:
+        print("Failed targets:")
+        for target_name in result["failed_targets"]:
+            print(f" - {target_name}")
 
 
 if __name__ == "__main__":

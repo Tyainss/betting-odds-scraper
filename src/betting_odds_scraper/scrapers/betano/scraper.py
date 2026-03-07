@@ -28,7 +28,9 @@ class BetanoScraper:
             site_config=self.site_config,
             target=target,
         )
-        
+        return self.scrape_target_url(target=target, url=url)
+
+    def scrape_target_url(self, target, url):
         self.logger.info("Scraping target=%s url=%s", target.name, url)
 
         try:
@@ -42,34 +44,39 @@ class BetanoScraper:
         self._dismiss_overlays()
         time.sleep(self.site_config.browser.wait_after_overlay_dismiss_seconds)
 
-        raw_blocks = self._get_candidate_blocks()
-        valid_blocks = [block for block in raw_blocks if is_valid_match_block(block)]
+        try:
+            raw_blocks = self._get_candidate_blocks()
+            valid_blocks = [block for block in raw_blocks if is_valid_match_block(block)]
 
-        self.logger.info(
-            "Target=%s candidate_blocks=%s valid_blocks=%s",
-            target.name,
-            len(raw_blocks),
-            len(valid_blocks),
-        )
-
-        parsed_rows = [
-            parse_match_block(
-                text=block,
-                site_name=self.site_config.site,
-                target_name=target.name,
-                country_name=target.country_slug,
-                league_name=target.name,
-                region_id=target.region_id,
-                league_id=target.league_id,
-                source_url=url,
-                source_timezone=self.site_config.datetime.timezone,
+            self.logger.info(
+                "Target=%s candidate_blocks=%s valid_blocks=%s",
+                target.name,
+                len(raw_blocks),
+                len(valid_blocks),
             )
-            for block in valid_blocks
-        ]
 
-        self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
+            parsed_rows = [
+                parse_match_block(
+                    text=block,
+                    site_name=self.site_config.site,
+                    target_name=target.name,
+                    country_name=target.country_slug,
+                    league_name=target.name,
+                    region_id=target.region_id,
+                    league_id=target.league_id,
+                    source_url=url,
+                    source_timezone=self.site_config.datetime.timezone,
+                )
+                for block in valid_blocks
+            ]
 
-        return [row.__dict__ for row in parsed_rows]
+            self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
+
+            return [row.__dict__ for row in parsed_rows]
+        except Exception:
+            self._save_debug_artifacts(target.name)
+            raise
+
 
     def _dismiss_overlays(self):
         for xpath in COOKIE_ACCEPT_XPATHS:

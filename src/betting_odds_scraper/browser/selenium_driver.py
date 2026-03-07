@@ -8,6 +8,7 @@ from betting_odds_scraper.models import BrowserConfig
 def build_chrome_driver(
     browser_config: BrowserConfig,
     chromedriver_path: str | None = None,
+    headless_override: bool | None = None,
 ) -> webdriver.Chrome:
     options = Options()
     options.add_argument("--start-maximized")
@@ -15,7 +16,9 @@ def build_chrome_driver(
     options.add_argument(f"--lang={browser_config.language}")
     options.add_argument("--disable-notifications")
 
-    if browser_config.headless:
+    run_headless = browser_config.headless if headless_override is None else headless_override
+
+    if run_headless:
         options.add_argument("--headless=new")
 
     if chromedriver_path:

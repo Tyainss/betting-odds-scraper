@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import time
 from pathlib import Path
 
 from betting_odds_scraper.browser.selenium_driver import build_chrome_driver
@@ -40,6 +41,32 @@ def _filter_targets(site_config, target_names):
     return selected_targets
 
 
+def _scrape_target_with_retries(scraper, target, retries, retry_delay_seconds, logger):
+    last_error = None
+
+    for attempt in range(1, retries + 2):
+        try:
+            logger.info(
+                "Scraping target=%s attempt=%s/%s",
+                target.name,
+                attempt,
+                retries + 1,
+            )
+            return scraper.scrape_target(target)
+        except Exception as exc:
+            last_error = exc
+            logger.exception(
+                "Failed target=%s attempt=%s/%s",
+                target.name,
+                attempt,
+                retries + 1,
+            )
+            if attempt < retries + 1:
+                time.sleep(retry_delay_seconds)
+
+    raise last_error
+
+
 def run_betano_scrape(
     config_path,
     output_format=None,
@@ -47,6 +74,10 @@ def run_betano_scrape(
     chromedriver_path=None,
     split_by_target=False,
     target_names=None,
+    headless_override=None,
+    continue_on_error=False,
+    retries=1,
+    retry_delay_seconds=2,
 ):
     logger = get_logger(__name__)
     site_config = load_betano_site_config(config_path)
@@ -63,6 +94,7 @@ def run_betano_scrape(
     driver = build_chrome_driver(
         browser_config=site_config.browser,
         chromedriver_path=chromedriver_path,
+        headless_override=headless_override,
     )
 
     try:
@@ -73,11 +105,25 @@ def run_betano_scrape(
 
         all_rows = []
         output_paths = []
+        failed_targets = []
         for target in selected_targets:
-            target_rows = scraper.scrape_target(target)
-            all_rows.extend(target_rows)
+            try:
+                target_rows = _scrape_target_with_retries(
+                    scraper=scraper,
+                    target=target,
+                    retries=retries,
+                    retry_delay_seconds=retry_delay_seconds,
+                    logger=logger,
+                )
+                all_rows.extend(target_rows)
+            except Exception as exc:
+                failed_targets.append(target.name)
+                if continue_on_error:
+                    logger.exception("Skipping failed target=%s", target.name)
+                    continue
+                raise exc
 
-            if split_by_target:
+            if split_by_target and target_rows:
                 target_output_path = _build_target_output_path(
                     base_dir=output_dir,
                     site_name=site_config.site,
@@ -109,4 +155,5 @@ def run_betano_scrape(
         "merged_output_path": output_path,
         "target_output_paths": output_paths,
         "rows": all_rows,
+        "failed_targets": failed_targets,
     }

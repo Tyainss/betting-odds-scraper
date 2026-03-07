@@ -13,9 +13,11 @@ dependencies = [
     "tzdata>=2025.3",
 ]
 
-[project.scripts]
-betting-odds-scraper = "betting_odds_scraper:main"
-
 [build-system]
 requires = ["uv_build>=0.9.17,<0.10.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

@@ -1,36 +1,38 @@
-from betting_odds_scraper.browser.selenium_driver import build_chrome_driver
-from betting_odds_scraper.config import load_betano_site_config
-from betting_odds_scraper.scrapers.betano.scraper import BetanoScraper
+import argparse
+
+from betting_odds_scraper.pipelines.scrape_betano import run_betano_scrape
 
 
 CONFIG_PATH = "configs/sites/betano.yaml"
 CHROMEDRIVER_PATH = None
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--output-format",
+        choices=["csv", "json"],
+        default=None,
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="data/processed",
+    )
+    return parser.parse_args()
+
+
 def main():
-    site_config = load_betano_site_config(CONFIG_PATH)
-    driver = build_chrome_driver(
-        browser_config=site_config.browser,
+    args = parse_args()
+
+    output_path, rows = run_betano_scrape(
+        config_path=CONFIG_PATH,
+        output_format=args.output_format,
+        output_dir=args.output_dir,
         chromedriver_path=CHROMEDRIVER_PATH,
     )
 
-    try:
-        scraper = BetanoScraper(
-            driver=driver,
-            site_config=site_config,
-        )
-
-        for target in site_config.targets:
-            rows = scraper.scrape_target(target)
-
-            print(f"\nTarget: {target.name}")
-            print(f"Rows found: {len(rows)}")
-
-            for row in rows:
-                print(row)
-
-    finally:
-        driver.quit()
+    print(f"Rows scraped: {len(rows)}")
+    print(f"Saved to: {output_path}")
 
 
 if __name__ == "__main__":

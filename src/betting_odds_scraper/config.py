@@ -10,6 +10,7 @@ from betting_odds_scraper.models import (
     DateTimeConfig,
     OutputConfig,
 )
+from betting_odds_scraper.validators import validate_betano_site_config
 
 
 def _read_yaml_file(file_path: str | Path) -> dict[str, Any]:
@@ -44,7 +45,7 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
         for target in targets_data
     )
 
-    return BetanoSiteConfig(
+    site_config = BetanoSiteConfig(
         site=data["site"],
         base_url=data["base_url"],
         browser=BrowserConfig(
@@ -64,3 +65,7 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
         default_market=data["default_market"],
         targets=targets,
     )
+
+    validate_betano_site_config(site_config)
+
+    return site_config

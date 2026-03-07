@@ -3,8 +3,8 @@ import argparse
 from betting_odds_scraper.pipelines.scrape_betano import run_betano_scrape
 
 
-CONFIG_PATH = "configs/sites/betano.yaml"
-CHROMEDRIVER_PATH = None
+DEFAULT_CONFIG_PATH = "configs/sites/betano.yaml"
+DEFAULT_CHROMEDRIVER_PATH = None
 
 
 def parse_args():
@@ -19,8 +19,23 @@ def parse_args():
         default="data/processed",
     )
     parser.add_argument(
+        "--config-path",
+        default=DEFAULT_CONFIG_PATH,
+    )
+    parser.add_argument(
+        "--chromedriver-path",
+        default=DEFAULT_CHROMEDRIVER_PATH,
+    )
+    parser.add_argument(
         "--split-by-target",
         action="store_true",
+    )
+    parser.add_argument(
+        "--target",
+        action="append",
+        dest="targets",
+        default=None,
+        help="Target name from config. Repeat to run multiple targets.",
     )
     return parser.parse_args()
 
@@ -29,11 +44,12 @@ def main():
     args = parse_args()
 
     result = run_betano_scrape(
-        config_path=CONFIG_PATH,
+        config_path=args.config_path,
         output_format=args.output_format,
         output_dir=args.output_dir,
-        chromedriver_path=CHROMEDRIVER_PATH,
+        chromedriver_path=args.chromedriver_path,
         split_by_target=args.split_by_target,
+        target_names=args.targets,
     )
 
     print(f"Rows scraped: {len(result['rows'])}")

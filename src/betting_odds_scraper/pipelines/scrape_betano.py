@@ -24,6 +24,21 @@ def _write_rows(rows, output_path, output_format):
     elif output_format == "json":
         write_rows_to_json(rows, output_path)
 
+def _filter_targets(site_config, target_names):
+    if not target_names:
+        return site_config.targets
+
+    selected_targets = tuple(
+        target
+        for target in site_config.targets
+        if target.name in target_names
+    )
+
+    if not selected_targets:
+        raise ValueError(f"No targets matched: {sorted(target_names)}")
+
+    return selected_targets
+
 
 def run_betano_scrape(
     config_path,
@@ -31,6 +46,7 @@ def run_betano_scrape(
     output_dir="data/processed",
     chromedriver_path=None,
     split_by_target=False,
+    target_names=None,
 ):
     logger = get_logger(__name__)
     site_config = load_betano_site_config(config_path)
@@ -41,6 +57,8 @@ def run_betano_scrape(
             f"Unsupported output format: {selected_output_format}. "
             f"Allowed formats: {site_config.output.allowed_formats}"
         )
+
+    selected_targets = _filter_targets(site_config, set(target_names or []))
 
     driver = build_chrome_driver(
         browser_config=site_config.browser,
@@ -55,7 +73,7 @@ def run_betano_scrape(
 
         all_rows = []
         output_paths = []
-        for target in site_config.targets:
+        for target in selected_targets:
             target_rows = scraper.scrape_target(target)
             all_rows.extend(target_rows)
 

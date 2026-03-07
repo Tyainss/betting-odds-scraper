@@ -3,7 +3,7 @@ from typing import Any
 
 import yaml
 
-from odds_scraper.models import (
+from betting_odds_scraper.models import (
     BetanoSiteConfig,
     BetanoTarget,
     BrowserConfig,

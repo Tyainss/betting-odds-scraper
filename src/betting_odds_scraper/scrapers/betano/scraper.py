@@ -3,6 +3,7 @@ import time
 
 from selenium.webdriver.common.by import By
 
+from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.parser import (
     is_valid_match_block,
     parse_match_block,
@@ -18,12 +19,15 @@ class BetanoScraper:
     def __init__(self, driver, site_config):
         self.driver = driver
         self.site_config = site_config
+        self.logger = get_logger(__name__)
 
     def scrape_target(self, target):
         url = build_betano_league_url(
             site_config=self.site_config,
             target=target,
         )
+        
+        self.logger.info("Scraping target=%s url=%s", target.name, url)
 
         self.driver.get(url)
         time.sleep(self.site_config.browser.wait_after_load_seconds)
@@ -33,6 +37,13 @@ class BetanoScraper:
 
         raw_blocks = self._get_candidate_blocks()
         valid_blocks = [block for block in raw_blocks if is_valid_match_block(block)]
+
+        self.logger.info(
+            "Target=%s candidate_blocks=%s valid_blocks=%s",
+            target.name,
+            len(raw_blocks),
+            len(valid_blocks),
+        )
 
         parsed_rows = [
             parse_match_block(
@@ -44,6 +55,8 @@ class BetanoScraper:
             )
             for block in valid_blocks
         ]
+
+        self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
 
         return parsed_rows
 

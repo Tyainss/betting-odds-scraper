@@ -1,4 +1,5 @@
 import pytest
+from dataclasses import replace
 
 from betting_odds_scraper.models import (
     BetanoSiteConfig,
@@ -28,23 +29,21 @@ def build_site_config(**overrides):
         datetime=DateTimeConfig(
             timezone="UTC",
         ),
-        default_market="matchresult",
         targets=(
             BetanoTarget(
                 name="primeira_liga",
                 sport_slug="futebol",
                 country_slug="portugal",
-                region_id=11382,
+                league_slug="primeira-liga",
                 league_id=17083,
-                market="matchresult",
             ),
         ),
     )
 
-    for key, value in overrides.items():
-        setattr(config, key, value)
-
+    if overrides:
+        config = replace(config, **overrides)
     return config
+
 
 
 def test_validate_betano_site_config_accepts_valid_config():
@@ -54,15 +53,7 @@ def test_validate_betano_site_config_accepts_valid_config():
 
 def test_validate_betano_site_config_rejects_empty_targets():
     site_config = build_site_config()
-    site_config = BetanoSiteConfig(
-        site=site_config.site,
-        base_url=site_config.base_url,
-        browser=site_config.browser,
-        output=site_config.output,
-        datetime=site_config.datetime,
-        default_market=site_config.default_market,
-        targets=(),
-    )
+    site_config = replace(site_config, targets=())
 
     with pytest.raises(ValueError, match="At least one target must be defined"):
         validate_betano_site_config(site_config)
@@ -70,17 +61,12 @@ def test_validate_betano_site_config_rejects_empty_targets():
 
 def test_validate_betano_site_config_rejects_invalid_default_format():
     site_config = build_site_config()
-    site_config = BetanoSiteConfig(
-        site=site_config.site,
-        base_url=site_config.base_url,
-        browser=site_config.browser,
+    site_config = replace(
+        site_config,
         output=OutputConfig(
             default_format="parquet",
             allowed_formats=("csv", "json"),
         ),
-        datetime=site_config.datetime,
-        default_market=site_config.default_market,
-        targets=site_config.targets,
     )
 
     with pytest.raises(ValueError, match="output.default_format"):

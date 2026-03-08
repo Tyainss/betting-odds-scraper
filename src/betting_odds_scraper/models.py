@@ -30,9 +30,8 @@ class BetanoTarget:
     name: str
     sport_slug: str
     country_slug: str
-    region_id: int
+    league_slug: str
     league_id: int
-    market: str
 
 
 @dataclass(frozen=True)
@@ -42,7 +41,6 @@ class BetanoSiteConfig:
     browser: BrowserConfig
     output: OutputConfig
     datetime: DateTimeConfig
-    default_market: str
     targets: tuple[BetanoTarget, ...]
 
 
@@ -53,7 +51,6 @@ class OddsRow:
     country: str
     league: str
     target_name: str
-    region_id: int
     league_id: int
     source_url: str
     scraped_at: str

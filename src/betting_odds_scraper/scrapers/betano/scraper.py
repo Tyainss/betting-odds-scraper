@@ -1,4 +1,4 @@
-import re
+
 import time
 from pathlib import Path
 
@@ -8,13 +8,11 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.parser import (
-    is_valid_match_block,
-    parse_match_block,
+    extract_initial_state_from_html,
+    extract_rows_from_initial_state,
 )
 from betting_odds_scraper.scrapers.betano.selectors import (
     COOKIE_ACCEPT_XPATHS,
-    PAGE_READY_XPATHS,
-    MATCH_BLOCKS_XPATH,
 )
 from betting_odds_scraper.scrapers.betano.url_builder import build_betano_league_url
 
@@ -49,37 +47,18 @@ class BetanoScraper:
         time.sleep(self.site_config.browser.wait_after_overlay_dismiss_seconds)
 
         try:
-            raw_blocks = self._get_candidate_blocks()
-            valid_blocks = [block for block in raw_blocks if is_valid_match_block(block)]
-
-            self.logger.info(
-                "Target=%s candidate_blocks=%s valid_blocks=%s",
-                target.name,
-                len(raw_blocks),
-                len(valid_blocks),
+            html = self.driver.page_source
+            initial_state = extract_initial_state_from_html(html)
+            parsed_rows = extract_rows_from_initial_state(
+                initial_state=initial_state,
+                site_name=self.site_config.site,
+                target_name=target.name,
+                country_name=target.country_slug,
+                league_name=target.name,
+                league_id=target.league_id,
+                source_url=url,
+                source_timezone=self.site_config.datetime.timezone,
             )
-
-            if not valid_blocks:
-                self.logger.warning("Target=%s has zero valid blocks; saving debug artifacts", target.name)
-                self._save_debug_artifacts(target.name)
-                self.driver.refresh()
-                self._wait_for_page_ready(target.name)
-                valid_blocks = [block for block in self._get_candidate_blocks() if is_valid_match_block(block)]
-
-            parsed_rows = [
-                parse_match_block(
-                    text=block,
-                    site_name=self.site_config.site,
-                    target_name=target.name,
-                    country_name=target.country_slug,
-                    league_name=target.name,
-                    region_id=target.region_id,
-                    league_id=target.league_id,
-                    source_url=url,
-                    source_timezone=self.site_config.datetime.timezone,
-                )
-                for block in valid_blocks
-            ]
 
             self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
 
@@ -100,44 +79,8 @@ class BetanoScraper:
 
     def _wait_for_page_ready(self, target_name, timeout=25):
         wait = WebDriverWait(self.driver, timeout)
-
-        last_error = None
-        for xpath in PAGE_READY_XPATHS:
-            try:
-                wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
-                self.logger.info("Page ready for target=%s using xpath=%s", target_name, xpath)
-                return
-            except Exception as exc:
-                last_error = exc
-                continue
-
-        self.logger.warning("Timed out waiting for page readiness for target=%s", target_name)
-        self._save_debug_artifacts(target_name)
-        if last_error:
-            raise last_error
-
-    def _get_candidate_blocks(self):
-        elements = self.driver.find_elements(By.XPATH, MATCH_BLOCKS_XPATH)
-
-        blocks = []
-        seen = set()
-
-        for element in elements:
-            try:
-                text = element.text.strip()
-                if not text:
-                    continue
-
-                normalized_text = re.sub(r"\s+", "\n", text.strip())
-                if normalized_text in seen:
-                    continue
-
-                seen.add(normalized_text)
-                blocks.append(text)
-            except Exception:
-                continue
-
-        return blocks
+        wait.until(lambda driver: 'window["initial_state"]' in driver.page_source)
+        self.logger.info("Page ready for target=%s using initial_state", target_name)
     
 
     def _save_debug_artifacts(self, target_name):

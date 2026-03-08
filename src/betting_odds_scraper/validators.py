@@ -30,11 +30,11 @@ def validate_betano_site_config(site_config):
         if not target.country_slug:
             raise ValueError(f"Target {target.name}: country_slug must not be empty")
 
-        if target.region_id <= 0:
-            raise ValueError(f"Target {target.name}: region_id must be > 0")
+        if not target.league_slug:
+            raise ValueError(f"Target {target.name}: league_slug must not be empty")
 
         if target.league_id <= 0:
             raise ValueError(f"Target {target.name}: league_id must be > 0")
 
-        if not target.market:
-            raise ValueError(f"Target {target.name}: market must not be empty")
+        if " " in target.league_slug:
+            raise ValueError(f"Target {target.name}: league_slug must not contain spaces")

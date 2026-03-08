@@ -38,9 +38,8 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
             name=target["name"],
             sport_slug=target["sport_slug"],
             country_slug=target["country_slug"],
-            region_id=int(target["region_id"]),
+            league_slug=target["league_slug"],
             league_id=int(target["league_id"]),
-            market=target.get("market", data["default_market"]),
         )
         for target in targets_data
     )
@@ -62,7 +61,6 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
         datetime=DateTimeConfig(
             timezone=datetime_data["timezone"],
         ),
-        default_market=data["default_market"],
         targets=targets,
     )
 

@@ -8,7 +8,8 @@ def build_betano_league_url(
 ) -> str:
     return (
         f"{site_config.base_url}/sport/"
-        f"{target.sport_slug}/competicoes/"
-        f"{target.country_slug}/{target.region_id}/"
-        f"?bt={target.market}&sl={target.league_id}"
+        f"{target.sport_slug}/"
+        f"{target.country_slug}/"
+        f"{target.league_slug}/"
+        f"{target.league_id}/"
     )

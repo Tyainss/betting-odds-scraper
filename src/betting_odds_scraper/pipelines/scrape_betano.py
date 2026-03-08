@@ -10,6 +10,14 @@ from betting_odds_scraper.storage.csv_writer import write_rows_to_csv
 from betting_odds_scraper.storage.json_writer import write_rows_to_json
 
 
+def _build_latest_output_path(base_dir, site_name, output_format):
+    return (
+        Path(base_dir)
+        / "latest"
+        / f"{site_name}_latest.{output_format}"
+    )
+
+
 def _build_output_path(base_dir, site_name, output_format):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return Path(base_dir) / f"{site_name}_{timestamp}.{output_format}"
@@ -78,6 +86,7 @@ def run_betano_scrape(
     continue_on_error=False,
     retries=1,
     retry_delay_seconds=2,
+    write_latest=True,
 ):
     logger = get_logger(__name__)
     site_config = load_betano_site_config(config_path)
@@ -152,8 +161,20 @@ def run_betano_scrape(
     _write_rows(all_rows, output_path, selected_output_format)
     logger.info("Saved merged rows=%s path=%s", len(all_rows), output_path)
 
+    latest_output_path = None
+    if write_latest:
+        latest_output_path = _build_latest_output_path(
+            base_dir=output_dir,
+            site_name=site_config.site,
+            output_format=selected_output_format,
+        )
+        _write_rows(all_rows, latest_output_path, selected_output_format)
+        logger.info("Saved latest rows=%s path=%s", len(all_rows), latest_output_path)
+
+
     return {
         "merged_output_path": output_path,
+        "latest_output_path": latest_output_path,
         "target_output_paths": output_paths,
         "rows": all_rows,
         "failed_targets": failed_targets,

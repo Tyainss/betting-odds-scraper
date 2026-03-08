@@ -68,6 +68,11 @@ def parse_args():
         "--log-file",
         default=None,
     )
+    parser.add_argument(
+        "--no-latest",
+        action="store_true",
+        help="Do not write the site latest snapshot file.",
+    )
     return parser.parse_args()
 
 
@@ -99,10 +104,13 @@ def main():
         continue_on_error=args.continue_on_error,
         retries=args.retries,
         retry_delay_seconds=args.retry_delay_seconds,
+        write_latest=not args.no_latest,
     )
 
     print(f"Rows scraped: {len(result['rows'])}")
     print(f"Saved merged output to: {result['merged_output_path']}")
+    if result["latest_output_path"]:
+        print(f"Saved latest output to: {result['latest_output_path']}")
 
     if result["target_output_paths"]:
         print("Saved target outputs to:")

@@ -24,6 +24,14 @@ class OutputConfig:
 class DateTimeConfig:
     timezone: str
 
+@dataclass(frozen=True)
+class SiteConfigBase:
+    site: str
+    base_url: str
+    browser: BrowserConfig
+    output: OutputConfig
+    datetime: DateTimeConfig
+
 
 @dataclass(frozen=True)
 class BetanoTarget:
@@ -35,15 +43,24 @@ class BetanoTarget:
 
 
 @dataclass(frozen=True)
-class BetanoSiteConfig:
-    site: str
-    base_url: str
-    browser: BrowserConfig
-    output: OutputConfig
-    datetime: DateTimeConfig
+class BetanoSiteConfig(SiteConfigBase):
     targets: tuple[BetanoTarget, ...]
 
 
+@dataclass(frozen=True)
+class BetclicTarget:
+    name: str
+    sport_slug: str
+    sport_code: str
+    competition_slug: str
+    competition_id: int
+    country_name: str
+    league_name: str
+
+
+@dataclass(frozen=True)
+class BetclicSiteConfig(SiteConfigBase):
+    targets: tuple[BetclicTarget, ...]
 
 @dataclass(frozen=True)
 class OddsRow:

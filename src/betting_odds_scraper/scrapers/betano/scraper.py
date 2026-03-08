@@ -19,6 +19,7 @@ from betting_odds_scraper.scrapers.betano.url_builder import build_betano_league
 
 class BetanoScraper:
     def __init__(self, driver, site_config):
+        self.site_name = site_config.site
         self.driver = driver
         self.site_config = site_config
         self.logger = get_logger(__name__)

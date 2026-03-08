@@ -73,6 +73,11 @@ def parse_args():
         action="store_true",
         help="Do not write the site latest snapshot file.",
     )
+    parser.add_argument(
+        "--append-history",
+        action="store_true",
+        help="Append rows to a cumulative site history file.",
+    )
     return parser.parse_args()
 
 
@@ -105,12 +110,15 @@ def main():
         retries=args.retries,
         retry_delay_seconds=args.retry_delay_seconds,
         write_latest=not args.no_latest,
+        append_history=args.append_history,
     )
 
     print(f"Rows scraped: {len(result['rows'])}")
     print(f"Saved merged output to: {result['merged_output_path']}")
     if result["latest_output_path"]:
         print(f"Saved latest output to: {result['latest_output_path']}")
+    if result["history_output_path"]:
+        print(f"Appended history output to: {result['history_output_path']}")
 
     if result["target_output_paths"]:
         print("Saved target outputs to:")

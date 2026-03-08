@@ -6,8 +6,14 @@ from betting_odds_scraper.browser.selenium_driver import build_chrome_driver
 from betting_odds_scraper.config import load_betano_site_config
 from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.scraper import BetanoScraper
-from betting_odds_scraper.storage.csv_writer import write_rows_to_csv
-from betting_odds_scraper.storage.json_writer import write_rows_to_json
+from betting_odds_scraper.storage.csv_writer import (
+    append_rows_to_csv,
+    write_rows_to_csv,
+)
+from betting_odds_scraper.storage.json_writer import (
+    append_rows_to_json,
+    write_rows_to_json,
+)
 
 
 def _build_latest_output_path(base_dir, site_name, output_format):
@@ -17,6 +23,13 @@ def _build_latest_output_path(base_dir, site_name, output_format):
         / f"{site_name}_latest.{output_format}"
     )
 
+
+def _build_history_output_path(base_dir, site_name, output_format):
+    return (
+        Path(base_dir)
+        / "history"
+        / f"{site_name}_history.{output_format}"
+    )
 
 def _build_output_path(base_dir, site_name, output_format):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -32,6 +45,13 @@ def _write_rows(rows, output_path, output_format):
         write_rows_to_csv(rows, output_path)
     elif output_format == "json":
         write_rows_to_json(rows, output_path)
+
+def _append_rows(rows, output_path, output_format):
+    if output_format == "csv":
+        append_rows_to_csv(rows, output_path)
+    elif output_format == "json":
+        append_rows_to_json(rows, output_path)
+
 
 def _filter_targets(site_config, target_names):
     if not target_names:
@@ -87,6 +107,7 @@ def run_betano_scrape(
     retries=1,
     retry_delay_seconds=2,
     write_latest=True,
+    append_history=False,
 ):
     logger = get_logger(__name__)
     site_config = load_betano_site_config(config_path)
@@ -171,10 +192,20 @@ def run_betano_scrape(
         _write_rows(all_rows, latest_output_path, selected_output_format)
         logger.info("Saved latest rows=%s path=%s", len(all_rows), latest_output_path)
 
+    history_output_path = None
+    if append_history:
+        history_output_path = _build_history_output_path(
+            base_dir=output_dir,
+            site_name=site_config.site,
+            output_format=selected_output_format,
+        )
+        _append_rows(all_rows, history_output_path, selected_output_format)
+        logger.info("Appended history rows=%s path=%s", len(all_rows), history_output_path)
 
     return {
         "merged_output_path": output_path,
         "latest_output_path": latest_output_path,
+        "history_output_path": history_output_path,
         "target_output_paths": output_paths,
         "rows": all_rows,
         "failed_targets": failed_targets,

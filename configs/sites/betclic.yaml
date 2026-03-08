@@ -1,0 +1,43 @@
+site: betclic
+base_url: "https://www.betclic.pt"
+
+browser:
+  headless: false
+  language: "pt-PT"
+  page_load_timeout_seconds: 60
+  wait_after_load_seconds: 8
+  wait_after_overlay_dismiss_seconds: 2
+
+output:
+  default_format: "csv"
+  allowed_formats:
+    - "csv"
+    - "json"
+
+datetime:
+  timezone: "UTC"
+
+targets:
+  - name: "liga_portugal_betclic"
+    sport_slug: "futebol"
+    sport_code: "football"
+    competition_slug: "liga-portugal-betclic"
+    competition_id: 32
+    country_name: "portugal"
+    league_name: "liga_portugal_betclic"
+
+  - name: "laliga"
+    sport_slug: "futebol"
+    sport_code: "football"
+    competition_slug: "espanha-la-liga"
+    competition_id: 7
+    country_name: "espanha"
+    league_name: "laliga"
+
+  - name: "bundesliga"
+    sport_slug: "futebol"
+    sport_code: "football"
+    competition_slug: "alemanha-bundesliga"
+    competition_id: 5
+    country_name: "alemanha"
+    league_name: "bundesliga"

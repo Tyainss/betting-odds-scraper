@@ -17,19 +17,106 @@ output:
 datetime:
   timezone: "UTC"
 
-default_market: "matchresult"
 
 targets:
   - name: "primeira_liga"
     sport_slug: "futebol"
     country_slug: "portugal"
-    region_id: 11382
+    league_slug: "primeira-liga"
     league_id: 17083
-    market: "matchresult"
 
   - name: "liga_2"
     sport_slug: "futebol"
     country_slug: "portugal"
-    region_id: 11382
+    league_slug: "liga-2"
     league_id: 17385
-    market: "matchresult"
+
+  - name: "laliga"
+    sport_slug: "futebol"
+    country_slug: "espanha"
+    league_slug: "laliga"
+    league_id: 5
+
+  - name: "segunda-division"
+    sport_slug: "futebol"
+    country_slug: "espanha"
+    league_slug: "segunda-division"
+    league_id: 10000
+
+  - name: "serie-a"
+    sport_slug: "futebol"
+    country_slug: "italia"
+    league_slug: "serie-a"
+    league_id: 1635
+
+  - name: "bundesliga"
+    sport_slug: "futebol"
+    country_slug: "alemanha"
+    league_slug: "bundesliga"
+    league_id: 216
+
+  - name: "2-bundesliga"
+    sport_slug: "futebol"
+    country_slug: "alemanha"
+    league_slug: "2-bundesliga"
+    league_id: 217
+
+  - name: "premier-league"
+    sport_slug: "futebol"
+    country_slug: "inglaterra"
+    league_slug: "premier-league"
+    league_id: 1
+
+  - name: "championship"
+    sport_slug: "futebol"
+    country_slug: "inglaterra"
+    league_slug: "championship"
+    league_id: 2
+
+  - name: "super-league-cn"
+    sport_slug: "futebol"
+    country_slug: "china"
+    league_slug: "super-league"
+    league_id: 16935
+
+  - name: "pro-league"
+    sport_slug: "futebol"
+    country_slug: "arabia-saudita"
+    league_slug: "pro-league"
+    league_id: 17766
+
+  - name: "brasileirao"
+    sport_slug: "futebol"
+    country_slug: "brasil"
+    league_slug: "brasileirao-serie-a-betano"
+    league_id: 10016
+
+  - name: "league-1"
+    sport_slug: "futebol"
+    country_slug: "franca"
+    league_slug: "ligue-1"
+    league_id: 215
+
+  - name: "super-league-1"
+    sport_slug: "futebol"
+    country_slug: "grecia"
+    league_slug: "super-league-1"
+    league_id: 1636
+
+  - name: "eedivisie"
+    sport_slug: "futebol"
+    country_slug: "paises-baixos"
+    league_slug: "eridivisie"
+    league_id: 17067
+
+  - name: "liga-mx"
+    sport_slug: "futebol"
+    country_slug: "mexico"
+    league_slug: "liga-mx"
+    league_id: 17264
+
+  - name: "super-lig"
+    sport_slug: "futebol"
+    country_slug: "turquia"
+    league_slug: "super-lig"
+    league_id: 17093

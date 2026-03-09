@@ -1,0 +1,224 @@
+site: betano
+base_url: "https://www.betano.pt"
+
+browser:
+  headless: false
+  language: "pt-PT"
+  page_load_timeout_seconds: 60
+  wait_after_load_seconds: 8
+  wait_after_overlay_dismiss_seconds: 2
+
+output:
+  default_format: "csv"
+  allowed_formats:
+    - "csv"
+    - "json"
+
+datetime:
+  timezone: "UTC"
+
+
+targets:
+  - name: "primeira_liga"
+    canonical:
+      target_id: "primeira_liga"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "primeira_liga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "portugal"
+      league_slug: "primeira-liga"
+      source_league_id: 17083
+
+  - name: "liga_2"
+    canonical:
+      target_id: "liga_2"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "liga_2"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "portugal"
+      league_slug: "liga-2"
+      source_league_id: 17385
+
+  - name: "laliga"
+    canonical:
+      target_id: "laliga"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "laliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "espanha"
+      league_slug: "laliga"
+      source_league_id: 5
+
+  - name: "segunda-division"
+    canonical:
+      target_id: "segunda_division"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "segunda_division"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "espanha"
+      league_slug: "segunda-division"
+      source_league_id: 10000
+
+  - name: "serie-a"
+    canonical:
+      target_id: "serie_a"
+      sport_id: "football"
+      country_id: "italy"
+      league_id: "serie_a"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "italia"
+      league_slug: "serie-a"
+      source_league_id: 1635
+
+  - name: "bundesliga"
+    canonical:
+      target_id: "bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "alemanha"
+      league_slug: "bundesliga"
+      source_league_id: 216
+
+  - name: "2-bundesliga"
+    canonical:
+      target_id: "2_bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "2_bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "alemanha"
+      league_slug: "2-bundesliga"
+      source_league_id: 217
+
+  - name: "premier-league"
+    canonical:
+      target_id: "premier_league"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "premier_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "inglaterra"
+      league_slug: "premier-league"
+      source_league_id: 1
+
+  - name: "championship"
+    canonical:
+      target_id: "championship"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "championship"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "inglaterra"
+      league_slug: "championship"
+      source_league_id: 2
+
+  - name: "super-league-cn"
+    canonical:
+      target_id: "super_league_cn"
+      sport_id: "football"
+      country_id: "china"
+      league_id: "super_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "china"
+      league_slug: "super-league"
+      source_league_id: 16935
+
+  - name: "pro-league"
+    canonical:
+      target_id: "saudi_pro_league"
+      sport_id: "football"
+      country_id: "saudi_arabia"
+      league_id: "saudi_pro_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "arabia-saudita"
+      league_slug: "pro-league"
+      source_league_id: 17766
+
+  - name: "brasileirao"
+    canonical:
+      target_id: "brasileirao_serie_a"
+      sport_id: "football"
+      country_id: "brazil"
+      league_id: "brasileirao_serie_a"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "brasil"
+      league_slug: "brasileirao-serie-a-betano"
+      source_league_id: 10016
+
+  - name: "league-1"
+    canonical:
+      target_id: "ligue_1"
+      sport_id: "football"
+      country_id: "france"
+      league_id: "ligue_1"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "franca"
+      league_slug: "ligue-1"
+      source_league_id: 215
+
+  - name: "super-league-1"
+    canonical:
+      target_id: "super_league_1"
+      sport_id: "football"
+      country_id: "greece"
+      league_id: "super_league_1"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "grecia"
+      league_slug: "super-league-1"
+      source_league_id: 1636
+
+  - name: "eredivisie"
+    canonical:
+      target_id: "eredivisie"
+      sport_id: "football"
+      country_id: "netherlands"
+      league_id: "eredivisie"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "paises-baixos"
+      league_slug: "eridivisie"
+      source_league_id: 17067
+
+  - name: "liga-mx"
+    canonical:
+      target_id: "liga_mx"
+      sport_id: "football"
+      country_id: "mexico"
+      league_id: "liga_mx"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "mexico"
+      league_slug: "liga-mx"
+      source_league_id: 17264
+
+  - name: "super-lig"
+    canonical:
+      target_id: "super_lig"
+      sport_id: "football"
+      country_id: "turkey"
+      league_id: "super_lig"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "turquia"
+      league_slug: "super-lig"
+      source_league_id: 17093

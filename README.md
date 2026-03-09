@@ -82,36 +82,81 @@ Before running the scraper, make sure you have:
 * `uv` installed
 * Google Chrome installed
 
+### 1. Install Python
+
+Check that Python is installed:
+
+```bash
+python --version
+```
+
+If Python is not installed yet, install Python 3.12 or newer first.
+
+### 2. Install `uv`
+
+Recommended installation methods:
+
+**Windows (PowerShell):**
+
+```bash
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**macOS / Linux:**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Alternative:
+
+```bash
+pip install uv
+```
+
+Then confirm it worked:
+
+```bash
+uv --version
+```
+
+### 3. Install Google Chrome
+
+Make sure Google Chrome is installed on your machine.
+
 Note on ChromeDriver:
 
 * in most cases, you do **not** need to install ChromeDriver manually
 * Selenium will usually resolve it automatically
 * if that fails in your environment, you can pass a manual path with `--chromedriver-path`
 
-### Clone the repository
+### 4. Clone the repository
 
 ```bash
 git clone <repo-url>
 cd betting-odds-scraper
 ```
 
-### Install dependencies
+### 5. Install dependencies
 
 ```bash
 uv sync
 ```
 
-This installs the project and its dependencies.
+This creates the project virtual environment and installs the project dependencies.
 
 ## Getting started
 
-### 1. Run the tests
+For most users, these are the only commands you need:
 
 ```bash
-uv run pytest -q
+uv sync
+uv run python scripts/run_betano_once.py --target primeira_liga
 ```
 
-### 2. Run a simple scrape
+After `uv sync`, run project commands with `uv run ...`.
+
+### 1. Run a simple scrape
 
 Betano:
 
@@ -125,21 +170,25 @@ Betclic:
 uv run python scripts/run_betclic_once.py --target laliga
 ```
 
-### 3. If ChromeDriver is not found automatically
+### 2. If ChromeDriver is not found automatically
 
-Run the same command with an explicit path:
+Usually, having Google Chrome installed is enough.
+
+Selenium will often handle the browser driver automatically. If that does not work in your environment, run the same command with an explicit driver path:
 
 ```bash
 uv run python scripts/run_betano_once.py --chromedriver-path "C:/path/to/chromedriver.exe"
 ```
 
-### 4. Where outputs are written
+### 3. Where outputs are written
 
 By default, files are written to:
 
 ```text
 data/processed/
 ```
+
+That is enough to get started. No extra virtual environment activation step is required.
 
 ## Configuration
 
@@ -293,7 +342,6 @@ Design intent:
 * timestamped outputs are the source of truth
 * latest is convenience
 * history is optional and may contain duplicates across runs
-
 
 ## Adding a new bookmaker
 

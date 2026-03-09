@@ -64,9 +64,9 @@ def test_extract_rows_from_ng_state():
         target_id="laliga",
         sport_id="football",
         country_id="spain",
-        canonical_league_id="laliga",
+        league_id="laliga",
         source_sport="futebol",
-        source_country="espanha",
+        source_country="spain",
         source_league="espanha-la-liga",
         source_target_name="laliga",
         source_league_id=7,
@@ -88,7 +88,7 @@ def test_extract_rows_from_ng_state():
     assert row.odd_2 == 9.0
     assert row.live is False
     assert row.source_sport == "futebol"
-    assert row.source_country == "espanha"
+    assert row.source_country == "spain"
     assert row.source_league == "espanha-la-liga"
     assert row.source_target_name == "laliga"
     assert row.source_league_id == 7

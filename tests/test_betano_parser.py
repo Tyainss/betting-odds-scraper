@@ -55,7 +55,7 @@ def test_extract_rows_from_initial_state():
        target_id="laliga",
         sport_id="football",
         country_id="spain",
-        canonical_league_id="laliga",
+        league_id="laliga",
         source_sport="futebol",
         source_country="espanha",
         source_league="laliga",

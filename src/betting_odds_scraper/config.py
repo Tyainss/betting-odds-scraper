@@ -8,7 +8,6 @@ from betting_odds_scraper.models import (
     BetanoTarget,
     BetclicSiteConfig,
     BetclicTarget,
-    BetanoTarget,
     BrowserConfig,
     DateTimeConfig,
     OutputConfig,
@@ -29,7 +28,6 @@ def _read_yaml_file(file_path: str | Path) -> dict[str, Any]:
         raise ValueError(f"Config file must contain a top-level mapping: {path}")
 
     return data
-
 
 
 def _build_browser_config(browser_data: dict[str, Any]) -> BrowserConfig:
@@ -65,11 +63,15 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
 
     targets = tuple(
         BetanoTarget(
+            target_id=target["canonical"]["target_id"],
+            sport_id=target["canonical"]["sport_id"],
+            country_id=target["canonical"]["country_id"],
+            league_id=target["canonical"]["league_id"],
             name=target["name"],
-            sport_slug=target["sport_slug"],
-            country_slug=target["country_slug"],
-            league_slug=target["league_slug"],
-            league_id=int(target["league_id"]),
+            sport_slug=target["site_data"]["sport_slug"],
+            country_slug=target["site_data"]["country_slug"],
+            league_slug=target["site_data"]["league_slug"],
+            source_league_id=int(target["site_data"]["source_league_id"]),
         )
         for target in targets_data
     )
@@ -84,9 +86,7 @@ def load_betano_site_config(file_path: str | Path) -> BetanoSiteConfig:
     )
 
     validate_betano_site_config(site_config)
-
     return site_config
-
 
 
 def load_betclic_site_config(file_path: str | Path) -> BetclicSiteConfig:
@@ -99,13 +99,17 @@ def load_betclic_site_config(file_path: str | Path) -> BetclicSiteConfig:
 
     targets = tuple(
         BetclicTarget(
+            target_id=target["canonical"]["target_id"],
+            sport_id=target["canonical"]["sport_id"],
+            country_id=target["canonical"]["country_id"],
+            league_id=target["canonical"]["league_id"],
             name=target["name"],
-            sport_slug=target["sport_slug"],
-            sport_code=target["sport_code"],
-            competition_slug=target["competition_slug"],
-            competition_id=int(target["competition_id"]),
-            country_name=target["country_name"],
-            league_name=target["league_name"],
+            sport_slug=target["site_data"]["sport_slug"],
+            sport_code=target["site_data"]["sport_code"],
+            competition_slug=target["site_data"]["competition_slug"],
+            source_league_id=int(target["site_data"]["source_league_id"]),
+            source_country_name=target["site_data"]["source_country_name"],
+            source_league_name=target["site_data"]["source_league_name"],
         )
         for target in targets_data
     )
@@ -120,5 +124,4 @@ def load_betclic_site_config(file_path: str | Path) -> BetclicSiteConfig:
     )
 
     validate_betclic_site_config(site_config)
-
     return site_config

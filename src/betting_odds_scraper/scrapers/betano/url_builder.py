@@ -11,5 +11,5 @@ def build_betano_league_url(
         f"{target.sport_slug}/"
         f"{target.country_slug}/"
         f"{target.league_slug}/"
-        f"{target.league_id}/"
+        f"{target.source_league_id}/"
     )

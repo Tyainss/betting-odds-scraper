@@ -19,25 +19,43 @@ datetime:
 
 targets:
   - name: "liga_portugal_betclic"
-    sport_slug: "futebol"
-    sport_code: "football"
-    competition_slug: "liga-portugal-betclic"
-    competition_id: 32
-    country_name: "portugal"
-    league_name: "liga_portugal_betclic"
+    canonical:
+      target_id: "primeira_liga"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "primeira_liga"
+    site_data:
+      sport_slug: "futebol"
+      sport_code: "football"
+      competition_slug: "liga-portugal-betclic"
+      source_league_id: 32
+      source_country_name: "portugal"
+      source_league_name: "liga-portugal-betclic"
 
   - name: "laliga"
-    sport_slug: "futebol"
-    sport_code: "football"
-    competition_slug: "espanha-la-liga"
-    competition_id: 7
-    country_name: "espanha"
-    league_name: "laliga"
+    canonical:
+      target_id: "laliga"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "laliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_code: "football"
+      competition_slug: "espanha-la-liga"
+      source_league_id: 7
+      source_country_name: "espanha"
+      source_league_name: "espanha-la-liga"
 
   - name: "bundesliga"
-    sport_slug: "futebol"
-    sport_code: "football"
-    competition_slug: "alemanha-bundesliga"
-    competition_id: 5
-    country_name: "alemanha"
-    league_name: "bundesliga"
+    canonical:
+      target_id: "bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_code: "football"
+      competition_slug: "alemanha-bundesliga"
+      source_league_id: 5
+      source_country_name: "alemanha"
+      source_league_name: "alemanha-bundesliga"

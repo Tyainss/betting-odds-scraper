@@ -52,10 +52,15 @@ def test_extract_rows_from_initial_state():
     rows = extract_rows_from_initial_state(
         initial_state=initial_state,
         site_name="betano",
-        target_name="laliga",
-        country_name="espanha",
-        league_name="laliga",
-        league_id=5,
+       target_id="laliga",
+        sport_id="football",
+        country_id="spain",
+        canonical_league_id="laliga",
+        source_sport="futebol",
+        source_country="espanha",
+        source_league="laliga",
+        source_target_name="laliga",
+        source_league_id=5,
         source_url="https://www.betano.pt/test",
         source_timezone="UTC",
     )
@@ -63,10 +68,10 @@ def test_extract_rows_from_initial_state():
 
     row = rows[0]
     assert row.site == "betano"
-    assert row.country == "espanha"
-    assert row.league == "laliga"
-    assert row.target_name == "laliga"
-    assert row.league_id == 5
+    assert row.sport_id == "football"
+    assert row.country_id == "spain"
+    assert row.league_id == "laliga"
+    assert row.target_id == "laliga"
     assert row.source_url == "https://www.betano.pt/test"
     assert row.live is False
     assert row.home_team == "Villarreal"
@@ -74,4 +79,9 @@ def test_extract_rows_from_initial_state():
     assert row.odd_1 == 1.44
     assert row.odd_x == 4.55
     assert row.odd_2 == 6.2
+    assert row.source_sport == "futebol"
+    assert row.source_country == "espanha"
+    assert row.source_league == "laliga"
+    assert row.source_target_name == "laliga"
+    assert row.source_league_id == 5
     assert row.fixture_date is not None

@@ -8,5 +8,5 @@ def build_betclic_league_url(
     return (
         f"{site_config.base_url}/"
         f"{target.sport_slug}-s{target.sport_code}/"
-        f"{target.competition_slug}-c{target.competition_id}"
+        f"{target.competition_slug}-c{target.source_league_id}"
     )

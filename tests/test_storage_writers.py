@@ -17,7 +17,7 @@ def test_write_rows_to_csv(tmp_path):
     rows = [
         {
             "site": "betano",
-            "league": "primeira_liga",
+            "league_id": "primeira_liga",
             "home_team": "SC Braga",
             "away_team": "Sporting CP",
             "odd_1": 3.7,
@@ -35,7 +35,7 @@ def test_write_rows_to_csv(tmp_path):
 
     assert len(loaded_rows) == 1
     assert loaded_rows[0]["site"] == "betano"
-    assert loaded_rows[0]["league"] == "primeira_liga"
+    assert loaded_rows[0]["league_id"] == "primeira_liga"
     assert loaded_rows[0]["home_team"] == "SC Braga"
 
 
@@ -43,7 +43,7 @@ def test_write_rows_to_json(tmp_path):
     rows = [
         {
             "site": "betano",
-            "league": "primeira_liga",
+            "league_id": "primeira_liga",
             "home_team": "SC Braga",
             "away_team": "Sporting CP",
             "odd_1": 3.7,
@@ -60,7 +60,7 @@ def test_write_rows_to_json(tmp_path):
 
     assert len(loaded_rows) == 1
     assert loaded_rows[0]["site"] == "betano"
-    assert loaded_rows[0]["league"] == "primeira_liga"
+    assert loaded_rows[0]["league_id"] == "primeira_liga"
     assert loaded_rows[0]["home_team"] == "SC Braga"
 
 
@@ -82,10 +82,10 @@ def test_append_rows_to_csv_appends_without_rewriting_header(tmp_path):
     output_path = tmp_path / "history.csv"
 
     rows_1 = [
-        {"site": "betano", "league": "primeira_liga", "home_team": "A"}
+        {"site": "betano", "league_id": "primeira_liga", "home_team": "A"}
     ]
     rows_2 = [
-        {"site": "betano", "league": "laliga", "home_team": "B"}
+        {"site": "betano", "league_id": "laliga", "home_team": "B"}
     ]
 
     append_rows_to_csv(rows_1, output_path)
@@ -96,18 +96,18 @@ def test_append_rows_to_csv_appends_without_rewriting_header(tmp_path):
         loaded_rows = list(reader)
 
     assert len(loaded_rows) == 2
-    assert loaded_rows[0]["league"] == "primeira_liga"
-    assert loaded_rows[1]["league"] == "laliga"
+    assert loaded_rows[0]["league_id"] == "primeira_liga"
+    assert loaded_rows[1]["league_id"] == "laliga"
 
 
 def test_append_rows_to_json_appends_to_existing_list(tmp_path):
     output_path = tmp_path / "history.json"
 
     rows_1 = [
-        {"site": "betano", "league": "primeira_liga", "home_team": "A"}
+        {"site": "betano", "league_id": "primeira_liga", "home_team": "A"}
     ]
     rows_2 = [
-        {"site": "betano", "league": "laliga", "home_team": "B"}
+        {"site": "betano", "league_id": "laliga", "home_team": "B"}
     ]
 
     append_rows_to_json(rows_1, output_path)
@@ -117,5 +117,5 @@ def test_append_rows_to_json_appends_to_existing_list(tmp_path):
         loaded_rows = json.load(file)
 
     assert len(loaded_rows) == 2
-    assert loaded_rows[0]["league"] == "primeira_liga"
-    assert loaded_rows[1]["league"] == "laliga"
+    assert loaded_rows[0]["league_id"] == "primeira_liga"
+    assert loaded_rows[1]["league_id"] == "laliga"

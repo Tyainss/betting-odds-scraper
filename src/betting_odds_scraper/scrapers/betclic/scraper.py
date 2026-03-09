@@ -51,10 +51,15 @@ class BetclicScraper:
             parsed_rows = extract_rows_from_ng_state(
                 ng_state=ng_state,
                 site_name=self.site_config.site,
-                target_name=target.name,
-                country_name=target.country_name,
-                league_name=target.league_name,
-                competition_id=target.competition_id,
+                target_id=target.target_id,
+                sport_id=target.sport_id,
+                country_id=target.country_id,
+                league_id=target.league_id,
+                source_sport=target.sport_slug,
+                source_country=target.source_country_name,
+                source_league=target.source_league_name,
+                source_target_name=target.name,
+                source_league_id=target.source_league_id,
                 source_url=url,
             )
 

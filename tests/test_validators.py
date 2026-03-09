@@ -31,11 +31,15 @@ def build_site_config(**overrides):
         ),
         targets=(
             BetanoTarget(
+                target_id="primeira_liga",
+                sport_id="football",
+                country_id="portugal",
+                league_id="primeira_liga",
                 name="primeira_liga",
                 sport_slug="futebol",
                 country_slug="portugal",
                 league_slug="primeira-liga",
-                league_id=17083,
+                source_league_id=17083,
             ),
         ),
     )

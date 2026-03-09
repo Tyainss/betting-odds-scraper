@@ -34,12 +34,20 @@ class SiteConfigBase:
 
 
 @dataclass(frozen=True)
-class BetanoTarget:
+class CanonicalTarget:
+    target_id: str
+    sport_id: str
+    country_id: str
+    league_id: str
+
+
+@dataclass(frozen=True)
+class BetanoTarget(CanonicalTarget):
     name: str
     sport_slug: str
     country_slug: str
     league_slug: str
-    league_id: int
+    source_league_id: int
 
 
 @dataclass(frozen=True)
@@ -48,14 +56,14 @@ class BetanoSiteConfig(SiteConfigBase):
 
 
 @dataclass(frozen=True)
-class BetclicTarget:
+class BetclicTarget(CanonicalTarget):
     name: str
     sport_slug: str
     sport_code: str
     competition_slug: str
-    competition_id: int
-    country_name: str
-    league_name: str
+    source_league_id: int
+    source_country_name: str
+    source_league_name: str
 
 
 @dataclass(frozen=True)
@@ -65,10 +73,10 @@ class BetclicSiteConfig(SiteConfigBase):
 @dataclass(frozen=True)
 class OddsRow:
     site: str
-    country: str
-    league: str
-    target_name: str
-    league_id: int
+    sport_id: str
+    country_id: str
+    league_id: str
+    target_id: str
     source_url: str
     scraped_at: str
     live: bool
@@ -80,3 +88,8 @@ class OddsRow:
     odd_1: float
     odd_x: float
     odd_2: float
+    source_sport: str
+    source_country: str
+    source_league: str
+    source_target_name: str
+    source_league_id: int

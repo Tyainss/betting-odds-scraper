@@ -79,10 +79,15 @@ def _extract_match_result_prices(market, home_team, away_team):
 def extract_rows_from_ng_state(
     ng_state,
     site_name,
-    target_name,
-    country_name,
-    league_name,
-    competition_id,
+    target_id,
+    sport_id,
+    country_id,
+    league_id,
+    source_sport,
+    source_country,
+    source_league,
+    source_target_name,
+    source_league_id,
     source_url,
 ):
     rows = []
@@ -96,7 +101,7 @@ def extract_rows_from_ng_state(
             continue
 
         competition = match_info.get("competition", {})
-        if str(competition.get("id")) != str(competition_id):
+        if str(competition.get("id")) != str(source_league_id):
             continue
 
         match_id = match_info.get("matchId")
@@ -128,10 +133,10 @@ def extract_rows_from_ng_state(
         rows.append(
             OddsRow(
                 site=site_name,
-                country=country_name,
-                league=league_name,
-                target_name=target_name,
-                league_id=int(competition_id),
+                sport_id=sport_id,
+                country_id=country_id,
+                league_id=league_id,
+                target_id=target_id,
                 source_url=source_url,
                 scraped_at=datetime.now(timezone.utc).isoformat(),
                 live=bool(match_info.get("isLive", False)),
@@ -143,6 +148,11 @@ def extract_rows_from_ng_state(
                 odd_1=prices["1"],
                 odd_x=prices["X"],
                 odd_2=prices["2"],
+                source_sport=source_sport,
+                source_country=source_country,
+                source_league=source_league,
+                source_target_name=source_target_name,
+                source_league_id=int(source_league_id),
             )
         )
         seen_match_ids.add(match_id)

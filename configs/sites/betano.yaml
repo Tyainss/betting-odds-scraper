@@ -20,103 +20,205 @@ datetime:
 
 targets:
   - name: "primeira_liga"
-    sport_slug: "futebol"
-    country_slug: "portugal"
-    league_slug: "primeira-liga"
-    league_id: 17083
+    canonical:
+      target_id: "primeira_liga"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "primeira_liga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "portugal"
+      league_slug: "primeira-liga"
+      source_league_id: 17083
 
   - name: "liga_2"
-    sport_slug: "futebol"
-    country_slug: "portugal"
-    league_slug: "liga-2"
-    league_id: 17385
+    canonical:
+      target_id: "liga_2"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "liga_2"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "portugal"
+      league_slug: "liga-2"
+      source_league_id: 17385
 
   - name: "laliga"
-    sport_slug: "futebol"
-    country_slug: "espanha"
-    league_slug: "laliga"
-    league_id: 5
+    canonical:
+      target_id: "laliga"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "laliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "espanha"
+      league_slug: "laliga"
+      source_league_id: 5
 
   - name: "segunda-division"
-    sport_slug: "futebol"
-    country_slug: "espanha"
-    league_slug: "segunda-division"
-    league_id: 10000
+    canonical:
+      target_id: "segunda_division"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "segunda_division"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "espanha"
+      league_slug: "segunda-division"
+      source_league_id: 10000
 
   - name: "serie-a"
-    sport_slug: "futebol"
-    country_slug: "italia"
-    league_slug: "serie-a"
-    league_id: 1635
+    canonical:
+      target_id: "serie_a"
+      sport_id: "football"
+      country_id: "italy"
+      league_id: "serie_a"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "italia"
+      league_slug: "serie-a"
+      source_league_id: 1635
 
   - name: "bundesliga"
-    sport_slug: "futebol"
-    country_slug: "alemanha"
-    league_slug: "bundesliga"
-    league_id: 216
+    canonical:
+      target_id: "bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "alemanha"
+      league_slug: "bundesliga"
+      source_league_id: 216
 
   - name: "2-bundesliga"
-    sport_slug: "futebol"
-    country_slug: "alemanha"
-    league_slug: "2-bundesliga"
-    league_id: 217
+    canonical:
+      target_id: "2_bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "2_bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "alemanha"
+      league_slug: "2-bundesliga"
+      source_league_id: 217
 
   - name: "premier-league"
-    sport_slug: "futebol"
-    country_slug: "inglaterra"
-    league_slug: "premier-league"
-    league_id: 1
+    canonical:
+      target_id: "premier_league"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "premier_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "inglaterra"
+      league_slug: "premier-league"
+      source_league_id: 1
 
   - name: "championship"
-    sport_slug: "futebol"
-    country_slug: "inglaterra"
-    league_slug: "championship"
-    league_id: 2
+    canonical:
+      target_id: "championship"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "championship"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "inglaterra"
+      league_slug: "championship"
+      source_league_id: 2
 
   - name: "super-league-cn"
-    sport_slug: "futebol"
-    country_slug: "china"
-    league_slug: "super-league"
-    league_id: 16935
+    canonical:
+      target_id: "super_league_cn"
+      sport_id: "football"
+      country_id: "china"
+      league_id: "super_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "china"
+      league_slug: "super-league"
+      source_league_id: 16935
 
   - name: "pro-league"
-    sport_slug: "futebol"
-    country_slug: "arabia-saudita"
-    league_slug: "pro-league"
-    league_id: 17766
+    canonical:
+      target_id: "saudi_pro_league"
+      sport_id: "football"
+      country_id: "saudi_arabia"
+      league_id: "saudi_pro_league"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "arabia-saudita"
+      league_slug: "pro-league"
+      source_league_id: 17766
 
   - name: "brasileirao"
-    sport_slug: "futebol"
-    country_slug: "brasil"
-    league_slug: "brasileirao-serie-a-betano"
-    league_id: 10016
+    canonical:
+      target_id: "brasileirao_serie_a"
+      sport_id: "football"
+      country_id: "brazil"
+      league_id: "brasileirao_serie_a"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "brasil"
+      league_slug: "brasileirao-serie-a-betano"
+      source_league_id: 10016
 
   - name: "league-1"
-    sport_slug: "futebol"
-    country_slug: "franca"
-    league_slug: "ligue-1"
-    league_id: 215
+    canonical:
+      target_id: "ligue_1"
+      sport_id: "football"
+      country_id: "france"
+      league_id: "ligue_1"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "franca"
+      league_slug: "ligue-1"
+      source_league_id: 215
 
   - name: "super-league-1"
-    sport_slug: "futebol"
-    country_slug: "grecia"
-    league_slug: "super-league-1"
-    league_id: 1636
+    canonical:
+      target_id: "super_league_1"
+      sport_id: "football"
+      country_id: "greece"
+      league_id: "super_league_1"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "grecia"
+      league_slug: "super-league-1"
+      source_league_id: 1636
 
   - name: "eedivisie"
-    sport_slug: "futebol"
-    country_slug: "paises-baixos"
-    league_slug: "eridivisie"
-    league_id: 17067
+    canonical:
+      target_id: "eredivisie"
+      sport_id: "football"
+      country_id: "netherlands"
+      league_id: "eredivisie"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "paises-baixos"
+      league_slug: "eridivisie"
+      source_league_id: 17067
 
   - name: "liga-mx"
-    sport_slug: "futebol"
-    country_slug: "mexico"
-    league_slug: "liga-mx"
-    league_id: 17264
+    canonical:
+      target_id: "liga_mx"
+      sport_id: "football"
+      country_id: "mexico"
+      league_id: "liga_mx"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "mexico"
+      league_slug: "liga-mx"
+      source_league_id: 17264
 
   - name: "super-lig"
-    sport_slug: "futebol"
-    country_slug: "turquia"
-    league_slug: "super-lig"
-    league_id: 17093
+    canonical:
+      target_id: "super_lig"
+      sport_id: "football"
+      country_id: "turkey"
+      league_id: "super_lig"
+    site_data:
+      sport_slug: "futebol"
+      country_slug: "turquia"
+      league_slug: "super-lig"
+      source_league_id: 17093

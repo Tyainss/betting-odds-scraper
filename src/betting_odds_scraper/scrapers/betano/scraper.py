@@ -53,10 +53,15 @@ class BetanoScraper:
             parsed_rows = extract_rows_from_initial_state(
                 initial_state=initial_state,
                 site_name=self.site_config.site,
-                target_name=target.name,
-                country_name=target.country_slug,
-                league_name=target.name,
+                target_id=target.target_id,
+                sport_id=target.sport_id,
+                country_id=target.country_id,
                 league_id=target.league_id,
+                source_sport=target.sport_slug,
+                source_country=target.country_slug,
+                source_league=target.league_slug,
+                source_target_name=target.name,
+                source_league_id=target.source_league_id,
                 source_url=url,
                 source_timezone=self.site_config.datetime.timezone,
             )

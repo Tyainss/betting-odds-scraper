@@ -61,10 +61,15 @@ def test_extract_rows_from_ng_state():
     rows = extract_rows_from_ng_state(
         ng_state=ng_state,
         site_name="betclic",
-        target_name="laliga",
-        country_name="espanha",
-        league_name="laliga",
-        competition_id=7,
+        target_id="laliga",
+        sport_id="football",
+        country_id="spain",
+        canonical_league_id="laliga",
+        source_sport="futebol",
+        source_country="espanha",
+        source_league="espanha-la-liga",
+        source_target_name="laliga",
+        source_league_id=7,
         source_url="https://www.betclic.pt/futebol-sfootball/espanha-la-liga-c7",
     )
 
@@ -72,16 +77,21 @@ def test_extract_rows_from_ng_state():
     row = rows[0]
 
     assert row.site == "betclic"
-    assert row.country == "espanha"
-    assert row.league == "laliga"
-    assert row.target_name == "laliga"
-    assert row.league_id == 7
+    assert row.sport_id == "football"
+    assert row.country_id == "spain"
+    assert row.league_id == "laliga"
+    assert row.target_id == "laliga"
     assert row.home_team == "Barcelona"
     assert row.away_team == "Sevilha"
     assert row.odd_1 == 1.21
     assert row.odd_x == 6.25
     assert row.odd_2 == 9.0
     assert row.live is False
+    assert row.source_sport == "futebol"
+    assert row.source_country == "espanha"
+    assert row.source_league == "espanha-la-liga"
+    assert row.source_target_name == "laliga"
+    assert row.source_league_id == 7
     assert row.match_date == "2026-03-15"
     assert row.match_time == "15:15"
     assert row.fixture_date == "2026-03-15T15:15:00+00:00"

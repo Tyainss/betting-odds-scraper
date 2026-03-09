@@ -95,6 +95,3 @@ def validate_betclic_site_config(site_config):
 
         if target.source_league_id <= 0:
             raise ValueError(f"Target {target.name}: source_league_id must be > 0")
-
-        if not target.source_country_name or not target.source_league_name:
-            raise ValueError(f"Target {target.name}: source_country_name and source_league_name must not be empty")

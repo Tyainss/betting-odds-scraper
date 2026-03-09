@@ -62,8 +62,6 @@ class BetclicTarget(CanonicalTarget):
     sport_code: str
     competition_slug: str
     source_league_id: int
-    source_country_name: str
-    source_league_name: str
 
 
 @dataclass(frozen=True)

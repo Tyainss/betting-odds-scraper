@@ -108,8 +108,6 @@ def load_betclic_site_config(file_path: str | Path) -> BetclicSiteConfig:
             sport_code=target["site_data"]["sport_code"],
             competition_slug=target["site_data"]["competition_slug"],
             source_league_id=int(target["site_data"]["source_league_id"]),
-            source_country_name=target["site_data"]["source_country_name"],
-            source_league_name=target["site_data"]["source_league_name"],
         )
         for target in targets_data
     )

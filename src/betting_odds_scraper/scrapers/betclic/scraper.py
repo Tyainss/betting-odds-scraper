@@ -56,8 +56,6 @@ class BetclicScraper:
                 country_id=target.country_id,
                 league_id=target.league_id,
                 source_sport=target.sport_slug,
-                source_country=target.source_country_name,
-                source_league=target.source_league_name,
                 source_target_name=target.name,
                 source_league_id=target.source_league_id,
                 source_url=url,

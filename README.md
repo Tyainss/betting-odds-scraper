@@ -1,116 +1,160 @@
-# betting-odds-scraper
+# Betting Odds Scraper
 
-Generic betting odds scraping project with site-specific scraper modules.
+A Python project for scraping football betting odds from multiple bookmakers in a clean, config-driven way.
 
-## Current status
-
-Initial support is implemented for:
+Currently supported:
 
 * Betano
+* Betclic
 
-Current Betano strategy:
+## What it does
 
-* use Selenium to load league pages
-* extract structured data from `window["initial_state"]` in the loaded page source
-* normalize results into a shared output schema
-* save timestamped outputs and a site-level latest snapshot
-
----
-
-## Design principles
-
-* Generic repo, site-specific scraper modules
-* Config-driven scrape targets
-* Clear separation between:
-
-  * browser interaction
-  * scraping
-  * parsing
-  * storage
-  * pipeline/orchestration
-* Prefer robust, maintainable approaches over brittle DOM scraping when possible
-
----
+* Scrapes pre-match 1X2 odds from configured league pages
+* Uses Selenium to load bookmaker pages when direct requests are not reliable
+* Keeps site-specific scraping logic isolated per bookmaker
+* Normalizes results into a shared output schema
+* Writes timestamped snapshots, plus optional latest/history outputs
 
 ## Project structure
 
 ```text
 betting-odds-scraper/
-├─ configs/
-│  └─ sites/
-│     └─ betano.yaml
-├─ data/
-│  ├─ processed/
-│  └─ raw/
-├─ scripts/
-│  └─ run_betano_once.py
-├─ src/
-│  └─ betting_odds_scraper/
-│     ├─ browser/
-│     ├─ pipelines/
-│     ├─ scrapers/
-│     │  └─ betano/
-│     ├─ storage/
-│     ├─ config.py
-│     ├─ logger.py
-│     ├─ models.py
-│     └─ validators.py
-└─ tests/
+├── configs/
+│   └── sites/
+├── scripts/
+├── src/
+│   └── betting_odds_scraper/
+│       ├── browser/
+│       ├── pipelines/
+│       ├── scrapers/
+│       │   ├── betano/
+│       │   └── betclic/
+│       ├── storage/
+│       ├── config.py
+│       ├── logger.py
+│       ├── models.py
+│       └── validators.py
+└── tests/
 ```
 
----
+## How it works
 
-## Requirements
+The scraper is split into shared and site-specific parts.
 
-* Python 3.11+
-* [uv](https://docs.astral.sh/uv/)
-* Google Chrome installed
-* ChromeDriver available through Selenium/Chrome setup in your environment
+Shared:
 
----
+* config loading
+* validation
+* browser setup
+* scrape pipeline / retries
+* output writing
+
+Site-specific:
+
+* URL building
+* overlay dismissal
+* page readiness checks
+* parsing bookmaker page data
+
+### Current site strategies
+
+**Betano**
+
+* loads the league page with Selenium
+* reads `driver.page_source`
+* extracts `window["initial_state"]`
+* parses structured event / market / selection data
+
+**Betclic**
+
+* loads the league page with Selenium
+* reads `driver.page_source`
+* extracts the Angular `ng-state` payload
+* parses structured match / market data
 
 ## Installation
 
-### 1. Clone the repository
+### Requirements
+
+Before running the scraper, make sure you have:
+
+* Python 3.12 or newer
+* `uv` installed
+* Google Chrome installed
+
+Note on ChromeDriver:
+
+* in most cases, you do **not** need to install ChromeDriver manually
+* Selenium will usually resolve it automatically
+* if that fails in your environment, you can pass a manual path with `--chromedriver-path`
+
+### Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone <repo-url>
 cd betting-odds-scraper
 ```
 
-### 2. Initialize and sync the environment
+### Install dependencies
 
 ```bash
 uv sync
 ```
 
-This installs:
+This installs the project and its dependencies.
 
-* runtime dependencies
-* dev dependencies
-* the editable local package
+## Getting started
 
-### 3. Run tests
+### 1. Run the tests
 
 ```bash
 uv run pytest -q
 ```
 
----
+### 2. Run a simple scrape
+
+Betano:
+
+```bash
+uv run python scripts/run_betano_once.py --target primeira_liga
+```
+
+Betclic:
+
+```bash
+uv run python scripts/run_betclic_once.py --target laliga
+```
+
+### 3. If ChromeDriver is not found automatically
+
+Run the same command with an explicit path:
+
+```bash
+uv run python scripts/run_betano_once.py --chromedriver-path "C:/path/to/chromedriver.exe"
+```
+
+### 4. Where outputs are written
+
+By default, files are written to:
+
+```text
+data/processed/
+```
 
 ## Configuration
 
-Betano targets are defined in:
+Each bookmaker has its own YAML config under `configs/sites/`.
 
-```text
-configs/sites/betano.yaml
-```
+Targets use two layers:
+
+* `canonical`: internal IDs used across all sites
+* `site_data`: bookmaker-specific scraping inputs
 
 Example:
 
 ```yaml
-site: betano
-base_url: "https://www.betano.pt"
+site: betclic
+base_url: "https://www.betclic.pt"
 
 browser:
   headless: false
@@ -129,64 +173,30 @@ datetime:
   timezone: "UTC"
 
 targets:
-  - name: "primeira_liga"
-    sport_slug: "futebol"
-    country_slug: "portugal"
-    league_slug: "primeira-liga"
-    league_id: 17083
-
   - name: "laliga"
-    sport_slug: "futebol"
-    country_slug: "espanha"
-    league_slug: "laliga"
-    league_id: 5
+    canonical:
+      target_id: "laliga"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "laliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_code: "football"
+      competition_slug: "espanha-la-liga"
+      source_league_id: 7
 ```
-
-### Target fields
-
-Each target defines one league page to scrape.
-
-* `name`: internal target name
-* `sport_slug`: Betano sport path segment
-* `country_slug`: Betano country path segment
-* `league_slug`: Betano league path segment
-* `league_id`: Betano league ID
-
-These are used to build URLs like:
-
-```text
-https://www.betano.pt/sport/futebol/portugal/primeira-liga/17083/
-https://www.betano.pt/sport/futebol/espanha/laliga/5/
-```
-
----
-
-## How it works
-
-For each configured Betano target, the scraper:
-
-1. opens a fresh browser session
-2. loads the target league page
-3. waits for the page to contain `window["initial_state"]`
-4. dismisses cookie and overlay banners if needed
-5. extracts structured event data from the page source
-6. parses match result odds (`1`, `X`, `2`)
-7. normalizes the output rows
-8. writes results to disk
-
-A fresh browser session is used per target because reusing the same session across Betano targets can trigger anti-bot and security blocks.
-
----
 
 ## Output schema
 
-Current normalized output includes:
+Rows are normalized across sites.
+
+Main fields:
 
 * `site`
-* `country`
-* `league`
-* `target_name`
+* `sport_id`
+* `country_id`
 * `league_id`
+* `target_id`
 * `source_url`
 * `scraped_at`
 * `live`
@@ -198,193 +208,115 @@ Current normalized output includes:
 * `odd_1`
 * `odd_x`
 * `odd_2`
+* `source_sport`
+* `source_country`
+* `source_league`
+* `source_target_name`
+* `source_league_id`
 
-### Notes
+Notes:
 
-* `scraped_at` is UTC
-* `fixture_date` is a full ISO datetime in UTC
-* `match_date` and `match_time` are derived from the event start time
-* live matches may still include fixture timing if Betano exposes it in structured data
+* canonical `*_id` fields are the stable internal identifiers for cross-site analysis
+* `source_*` fields preserve bookmaker-specific traceability
+* `source_league_id` is the bookmaker competition/league identifier
 
----
+## Running
 
-## Usage
-
-### Default run
-
-Runs all configured Betano targets and writes:
-
-* one timestamped merged file
-* one site-level latest snapshot
+Run Betano:
 
 ```bash
 uv run python scripts/run_betano_once.py
 ```
 
-### Choose output format
+Run Betclic:
 
 ```bash
-uv run python scripts/run_betano_once.py --output-format json
+uv run python scripts/run_betclic_once.py
 ```
 
-### Run only specific targets
+Run a specific target:
 
 ```bash
 uv run python scripts/run_betano_once.py --target primeira_liga
+uv run python scripts/run_betclic_once.py --target laliga
 ```
 
-Multiple targets:
+Useful options:
 
 ```bash
-uv run python scripts/run_betano_once.py --target primeira_liga --target laliga
+--output-format csv|json
+--output-dir data/processed
+--config-path configs/sites/<site>.yaml
+--chromedriver-path /path/to/chromedriver
+--target <target_name>
+--headless
+--headed
+--split-by-target
+--continue-on-error
+--retries 1
+--retry-delay-seconds 2
+--log-level INFO
+--log-file scraper.log
+--no-latest
+--append-history
 ```
 
-### Save outputs to a custom directory
+Brief description:
 
-```bash
-uv run python scripts/run_betano_once.py --output-dir data/processed/betano
-```
+* `--output-format`: choose output file format
+* `--output-dir`: directory where outputs are written
+* `--config-path`: custom path to the site YAML config
+* `--chromedriver-path`: explicit ChromeDriver path when it is not on PATH
+* `--target`: run only selected target names; repeat to run multiple targets
+* `--headless`: run browser without opening the UI
+* `--headed`: force visible browser window
+* `--split-by-target`: write separate output files per target in addition to merged output
+* `--continue-on-error`: keep running remaining targets if one target fails
+* `--retries`: number of retries after the first failed attempt
+* `--retry-delay-seconds`: wait time between retries
+* `--log-level`: logging verbosity
+* `--log-file`: save logs to a file
+* `--no-latest`: skip writing the latest snapshot file
+* `--append-history`: append rows to the cumulative history file
 
-### Write one file per target as well
+## Outputs
 
-```bash
-uv run python scripts/run_betano_once.py --split-by-target
-```
+The pipeline supports:
 
-### Disable latest snapshot output
+* timestamped run outputs
+* latest site snapshot
+* optional cumulative history file
+* optional per-target outputs
 
-```bash
-uv run python scripts/run_betano_once.py --no-latest
-```
+Design intent:
 
-### Append to a cumulative history file
+* timestamped outputs are the source of truth
+* latest is convenience
+* history is optional and may contain duplicates across runs
 
-```bash
-uv run python scripts/run_betano_once.py --append-history
-```
 
-This appends rows to a site-level history file, for example:
+## Adding a new bookmaker
 
-```text
-data/processed/history/betano_history.csv
-```
+To add another site cleanly:
 
-### Run headless
+1. create a new scraper package under `src/betting_odds_scraper/scrapers/<site>/`
+2. add site-specific:
 
-```bash
-uv run python scripts/run_betano_once.py --headless
-```
+   * `scraper.py`
+   * `parser.py`
+   * `url_builder.py`
+   * `selectors.py` if needed
+3. add a site config YAML under `configs/sites/`
+4. add a pipeline entrypoint under `pipelines/`
+5. add tests for parser / validation behavior
 
-### Force headed mode
+Keep shared orchestration generic. Keep bookmaker-specific scraping logic isolated.
 
-```bash
-uv run python scripts/run_betano_once.py --headed
-```
+## Current scope
 
-### Continue if one target fails
+This project currently focuses on:
 
-```bash
-uv run python scripts/run_betano_once.py --continue-on-error
-```
-
-### Configure retries
-
-```bash
-uv run python scripts/run_betano_once.py --retries 2 --retry-delay-seconds 3
-```
-
-### Save logs to file
-
-```bash
-uv run python scripts/run_betano_once.py --log-file data/logs/betano.log
-```
-
-### Use a custom config file
-
-```bash
-uv run python scripts/run_betano_once.py --config-path configs/sites/betano.yaml
-```
-
-### Use a custom ChromeDriver path
-
-```bash
-uv run python scripts/run_betano_once.py --chromedriver-path "C:/path/to/chromedriver.exe"
-```
-
----
-
-## Output files
-
-By default, runs create:
-
-### Historical timestamped output
-
-Example:
-
-```text
-data/processed/betano_20260307T205455Z.csv
-```
-
-This is the source of truth for run history.
-
-### Latest site snapshot
-
-Example:
-
-```text
-data/processed/latest/betano_latest.csv
-```
-
-This is overwritten on each run and is meant for convenience.
-
-### Optional cumulative history file
-
-If `--append-history` is used:
-
-```text
-data/processed/history/betano_history.csv
-```
-
-This appends rows from each run into one growing site-level history file.
-
-Note:
-
-* this is a convenience output
-* duplicates are expected if you scrape the same leagues multiple times
-* timestamped files remain the primary source of truth
-
-### Optional per-target files
-
-If `--split-by-target` is used:
-
-```text
-data/processed/betano_primeira_liga_20260307T205455Z.csv
-data/processed/betano_laliga_20260307T205455Z.csv
-```
-
----
-
-## Debug artifacts
-
-When scraping or parsing fails, the scraper may save debug artifacts to help investigation, such as:
-
-* page screenshot
-* page source HTML
-
-These are stored under a raw/debug-style directory used by the scraper logic.
-
----
-
-## Testing
-
-Run all tests:
-
-```bash
-uv run pytest -q
-```
-
-Current test coverage includes:
-
-* Betano parser logic
-* config validation
-* storage writers
+* football
+* league-level manual target lists
+* 1X2 odds
+* pre-match first, with live included when naturally present on the loaded page

@@ -174,6 +174,18 @@ targets:
       competition_slug: "franca-ligue-1"
       source_league_id: 4
 
+  - name: "league-2"
+    canonical:
+      target_id: "ligue_2"
+      sport_id: "football"
+      country_id: "france"
+      league_id: "ligue_2"
+    site_data:
+      sport_slug: "futebol"
+      sport_code: "football"
+      competition_slug: "franca-ligue-2"
+      source_league_id: 19
+
   - name: "super-league-1"
     canonical:
       target_id: "super_league_1"

@@ -3,6 +3,7 @@ from typing import Literal, Optional
 
 
 OutputFormat = Literal["csv", "json"]
+DriverLifecycle = Literal["per_target", "per_run"]
 
 
 @dataclass(frozen=True)
@@ -10,8 +11,16 @@ class BrowserConfig:
     headless: bool
     language: str
     page_load_timeout_seconds: int
-    wait_after_load_seconds: int
-    wait_after_overlay_dismiss_seconds: int
+    wait_after_load_min_seconds: float
+    wait_after_load_max_seconds: float
+    wait_after_overlay_dismiss_min_seconds: float
+    wait_after_overlay_dismiss_max_seconds: float
+    delay_between_targets_min_seconds: float
+    delay_between_targets_max_seconds: float
+    retry_backoff_base_seconds: float
+    retry_backoff_max_seconds: float
+    driver_lifecycle: DriverLifecycle
+    abort_run_on_blocked: bool
 
 
 @dataclass(frozen=True)

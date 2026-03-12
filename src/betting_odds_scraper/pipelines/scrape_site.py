@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Protocol
+from contextlib import nullcontext
+import random
 import time
 
 from betting_odds_scraper.browser.selenium_driver import build_chrome_driver
@@ -12,6 +14,11 @@ from betting_odds_scraper.storage.csv_writer import (
 from betting_odds_scraper.storage.json_writer import (
     append_rows_to_json,
     write_rows_to_json,
+)
+from betting_odds_scraper.scrapers.exceptions import (
+    PageStructureChangedError,
+    SiteBlockedError,
+    TransientNavigationError,
 )
 
 
@@ -73,6 +80,45 @@ def _filter_targets(targets, target_names):
 
     return selected_targets
 
+def _sleep_between_targets(browser_config, logger, site_name, target_name):
+    delay_seconds = random.uniform(
+        browser_config.delay_between_targets_min_seconds,
+        browser_config.delay_between_targets_max_seconds,
+    )
+    if delay_seconds <= 0:
+        return
+
+    logger.info(
+        "Sleeping between targets site=%s target=%s delay_seconds=%.2f",
+        site_name,
+        target_name,
+        delay_seconds,
+    )
+    time.sleep(delay_seconds)
+
+
+def _compute_retry_delay_seconds(browser_config, attempt_number):
+    upper_bound = min(
+        browser_config.retry_backoff_max_seconds,
+        browser_config.retry_backoff_base_seconds * (2 ** (attempt_number - 1)),
+    )
+    return random.uniform(
+        browser_config.retry_backoff_base_seconds,
+        upper_bound,
+    )
+
+
+def _build_site_scraper(site_config, scraper_factory, chromedriver_path, headless_override):
+    driver = build_chrome_driver(
+        browser_config=site_config.browser,
+        chromedriver_path=chromedriver_path,
+        headless_override=headless_override,
+    )
+    scraper = scraper_factory(
+        driver=driver,
+        site_config=site_config,
+    )
+    return driver, scraper
 
 def _scrape_target_with_retries(scraper, target, retries, retry_delay_seconds, logger):
     last_error = None
@@ -87,6 +133,45 @@ def _scrape_target_with_retries(scraper, target, retries, retry_delay_seconds, l
                 retries + 1,
             )
             return scraper.scrape_target(target)
+        except SiteBlockedError:
+            logger.exception(
+                "Blocked site=%s target=%s attempt=%s/%s",
+                scraper.site_name,
+                target.name,
+                attempt,
+                retries + 1,
+            )
+            raise
+        except PageStructureChangedError:
+            logger.exception(
+                "Structure changed site=%s target=%s attempt=%s/%s",
+                scraper.site_name,
+                target.name,
+                attempt,
+                retries + 1,
+            )
+            raise
+        except TransientNavigationError as exc:
+            last_error = exc
+            logger.exception(
+                "Transient failure site=%s target=%s attempt=%s/%s",
+                scraper.site_name,
+                target.name,
+                attempt,
+                retries + 1,
+            )
+            if attempt < retries + 1:
+                delay_seconds = _compute_retry_delay_seconds(
+                    browser_config=scraper.site_config.browser,
+                    attempt_number=attempt,
+                )
+                logger.info(
+                    "Retrying site=%s target=%s after delay_seconds=%.2f",
+                    scraper.site_name,
+                    target.name,
+                    delay_seconds,
+                )
+                time.sleep(delay_seconds)
         except Exception as exc:
             last_error = exc
             logger.exception(
@@ -96,8 +181,7 @@ def _scrape_target_with_retries(scraper, target, retries, retry_delay_seconds, l
                 attempt,
                 retries + 1,
             )
-            if attempt < retries + 1:
-                time.sleep(retry_delay_seconds)
+            raise
 
     raise last_error
 
@@ -131,54 +215,92 @@ def run_site_scrape(
     all_rows = []
     target_output_paths = []
     failed_targets = []
+    stopped_reason = None
+    driver_lifecycle = site_config.browser.driver_lifecycle
 
-    for target in selected_targets:
-        driver = build_chrome_driver(
-            browser_config=site_config.browser,
+    shared_driver = None
+    shared_scraper = None
+
+    if driver_lifecycle == "per_run":
+        shared_driver, shared_scraper = _build_site_scraper(
+            site_config=site_config,
+            scraper_factory=scraper_factory,
             chromedriver_path=chromedriver_path,
             headless_override=headless_override,
         )
 
-        try:
-            scraper = scraper_factory(
-                driver=driver,
-                site_config=site_config,
-            )
+    try:
+        for target_index, target in enumerate(selected_targets):
+            target_rows = []
+            driver = None
+
+            if driver_lifecycle == "per_run":
+                scraper = shared_scraper
+                driver_context = nullcontext()
+            else:
+                driver, scraper = _build_site_scraper(
+                    site_config=site_config,
+                    scraper_factory=scraper_factory,
+                    chromedriver_path=chromedriver_path,
+                    headless_override=headless_override,
+                )
+                driver_context = nullcontext()
 
             try:
-                target_rows = _scrape_target_with_retries(
-                    scraper=scraper,
-                    target=target,
-                    retries=retries,
-                    retry_delay_seconds=retry_delay_seconds,
-                    logger=logger,
-                )
-                all_rows.extend(target_rows)
-            except Exception:
-                failed_targets.append(target.name)
-                if continue_on_error:
-                    logger.exception("Skipping failed site=%s target=%s", site_config.site, target.name)
-                    continue
-                raise
+                try:
+                    target_rows = _scrape_target_with_retries(
+                        scraper=scraper,
+                        target=target,
+                        retries=retries,
+                        retry_delay_seconds=retry_delay_seconds,
+                        logger=logger,
+                    )
+                    all_rows.extend(target_rows)
+                except SiteBlockedError:
+                    failed_targets.append(target.name)
+                    stopped_reason = "site_blocked"
+                    logger.exception("Stopping run because site=%s returned a blocked page for target=%s", site_config.site, target.name)
+                    if site_config.browser.abort_run_on_blocked:
+                        break
+                    raise
+                except Exception:
+                    failed_targets.append(target.name)
+                    if continue_on_error:
+                        logger.exception("Skipping failed site=%s target=%s", site_config.site, target.name)
+                        continue
+                    raise
 
-            if split_by_target and target_rows:
-                target_output_path = _build_target_output_path(
-                    base_dir=output_dir,
-                    site_name=site_config.site,
-                    target_name=target.name,
-                    output_format=selected_output_format,
-                )
-                _write_rows(target_rows, target_output_path, selected_output_format)
-                target_output_paths.append(target_output_path)
-                logger.info(
-                    "Saved site=%s target=%s rows=%s path=%s",
-                    site_config.site,
-                    target.name,
-                    len(target_rows),
-                    target_output_path,
-                )
-        finally:
-            driver.quit()
+                if split_by_target and target_rows:
+                    target_output_path = _build_target_output_path(
+                        base_dir=output_dir,
+                        site_name=site_config.site,
+                        target_name=target.name,
+                        output_format=selected_output_format,
+                    )
+                    _write_rows(target_rows, target_output_path, selected_output_format)
+                    target_output_paths.append(target_output_path)
+                    logger.info(
+                        "Saved site=%s target=%s rows=%s path=%s",
+                        site_config.site,
+                        target.name,
+                        len(target_rows),
+                        target_output_path,
+                    )
+
+                is_last_target = target_index == len(selected_targets) - 1
+                if not is_last_target:
+                    _sleep_between_targets(
+                        browser_config=site_config.browser,
+                        logger=logger,
+                        site_name=site_config.site,
+                        target_name=target.name,
+                    )
+            finally:
+                if driver_lifecycle == "per_target" and driver is not None:
+                    driver.quit()
+    finally:
+        if shared_driver is not None:
+            shared_driver.quit()
 
     merged_output_path = _build_output_path(
         base_dir=output_dir,
@@ -212,4 +334,5 @@ def run_site_scrape(
         "target_output_paths": target_output_paths,
         "rows": all_rows,
         "failed_targets": failed_targets,
+        "stopped_reason": stopped_reason,
     }

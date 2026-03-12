@@ -1,6 +1,8 @@
+import random
 import time
 from pathlib import Path
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -10,10 +12,16 @@ from betting_odds_scraper.scrapers.betclic.parser import (
     extract_rows_from_ng_state,
 )
 from betting_odds_scraper.scrapers.betclic.selectors import (
+    BLOCK_PAGE_MARKERS,
     COOKIE_ACCEPT_SELECTORS,
     PAGE_READY_MARKERS,
 )
 from betting_odds_scraper.scrapers.betclic.url_builder import build_betclic_league_url
+from betting_odds_scraper.scrapers.exceptions import (
+    PageStructureChangedError,
+    SiteBlockedError,
+    TransientNavigationError,
+)
 
 
 class BetclicScraper:
@@ -41,8 +49,11 @@ class BetclicScraper:
             raise
 
         self._wait_for_page_ready(target.name)
+        self._sleep_random(
+            self.site_config.browser.wait_after_load_min_seconds,
+            self.site_config.browser.wait_after_load_max_seconds,
+        )
         self._dismiss_overlays()
-        time.sleep(self.site_config.browser.wait_after_overlay_dismiss_seconds)
         self._wait_for_page_ready(target.name)
 
         try:
@@ -65,9 +76,12 @@ class BetclicScraper:
 
             self.logger.info("Target=%s parsed_rows=%s", target.name, len(parsed_rows))
             return [row.__dict__ for row in parsed_rows]
-        except Exception:
+        except SiteBlockedError:
             self._save_debug_artifacts(target.name)
             raise
+        except Exception as exc:
+            self._save_debug_artifacts(target.name)
+            raise PageStructureChangedError(f"Failed to parse Betclic page for target={target.name}") from exc
 
     def _dismiss_overlays(self):
         for selector in COOKIE_ACCEPT_SELECTORS:
@@ -75,20 +89,45 @@ class BetclicScraper:
                 button = self.driver.find_element(By.CSS_SELECTOR, selector)
                 if button.is_displayed():
                     self.driver.execute_script("arguments[0].click();", button)
-                    time.sleep(1)
+                    self._sleep_random(
+                        self.site_config.browser.wait_after_overlay_dismiss_min_seconds,
+                        self.site_config.browser.wait_after_overlay_dismiss_max_seconds,
+                    )
                     return
             except Exception:
                 continue
 
-    def _wait_for_page_ready(self, target_name, timeout=25):
-        wait = WebDriverWait(self.driver, timeout)
-        wait.until(
-            lambda driver: all(
-                marker in driver.page_source
-                for marker in PAGE_READY_MARKERS
+    def _wait_for_page_ready(self, target_name):
+        wait = WebDriverWait(self.driver, self.site_config.browser.page_load_timeout_seconds)
+
+        try:
+            wait.until(
+                lambda driver: self._page_has_ready_markers(driver.page_source) or self._page_is_blocked(driver.page_source)
             )
-        )
+        except TimeoutException as exc:
+            if self._page_is_blocked(self.driver.page_source):
+                raise SiteBlockedError(f"Betclic blocked access for target={target_name}") from exc
+            raise TransientNavigationError(f"Betclic page did not become ready for target={target_name}") from exc
+
+        if self._page_is_blocked(self.driver.page_source):
+            raise SiteBlockedError(f"Betclic blocked access for target={target_name}")
+
         self.logger.info("Page ready for target=%s using ng-state/card markers", target_name)
+
+    def _page_has_ready_markers(self, page_source):
+        return all(marker in page_source for marker in PAGE_READY_MARKERS)
+
+    def _page_is_blocked(self, page_source):
+        normalized_page_source = page_source.lower()
+        return any(marker in normalized_page_source for marker in BLOCK_PAGE_MARKERS)
+
+    def _sleep_random(self, min_seconds, max_seconds):
+        if max_seconds <= 0:
+            return
+
+        delay_seconds = random.uniform(min_seconds, max_seconds)
+        time.sleep(delay_seconds)
+
 
     def _save_debug_artifacts(self, target_name):
         self.debug_dir.mkdir(parents=True, exist_ok=True)

@@ -1,4 +1,4 @@
-
+import random
 import time
 from pathlib import Path
 
@@ -42,10 +42,16 @@ class BetanoScraper:
             raise
 
         self._wait_for_page_ready(target.name)
-
+        self._sleep_random(
+            self.site_config.browser.wait_after_load_min_seconds,
+            self.site_config.browser.wait_after_load_max_seconds,
+        )
         self._dismiss_overlays()
+        self._sleep_random(
+            self.site_config.browser.wait_after_overlay_dismiss_min_seconds,
+            self.site_config.browser.wait_after_overlay_dismiss_max_seconds,
+        )
         self._wait_for_page_ready(target.name)
-        time.sleep(self.site_config.browser.wait_after_overlay_dismiss_seconds)
 
         try:
             html = self.driver.page_source
@@ -101,3 +107,10 @@ class BetanoScraper:
             self.logger.info("Saved debug artifacts for target=%s", target_name)
         except Exception:
             self.logger.exception("Failed to save debug artifacts for target=%s", target_name)
+
+    def _sleep_random(self, min_seconds, max_seconds):
+        if max_seconds <= 0:
+            return
+
+        delay_seconds = random.uniform(min_seconds, max_seconds)
+        time.sleep(delay_seconds)

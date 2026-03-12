@@ -5,6 +5,7 @@ browser:
   headless: false
   language: "pt-PT"
   page_load_timeout_seconds: 60
+  driver_lifecycle: "per_target"
   wait_after_load_seconds: 8
   wait_after_overlay_dismiss_seconds: 2
 

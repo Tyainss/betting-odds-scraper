@@ -1,3 +1,32 @@
+def _validate_browser_config(browser_config):
+    if browser_config.page_load_timeout_seconds <= 0:
+        raise ValueError("browser.page_load_timeout_seconds must be > 0")
+
+    if browser_config.wait_after_load_min_seconds < 0:
+        raise ValueError("browser.wait_after_load_min_seconds must be >= 0")
+
+    if browser_config.wait_after_load_max_seconds < browser_config.wait_after_load_min_seconds:
+        raise ValueError("browser.wait_after_load_max_seconds must be >= browser.wait_after_load_min_seconds")
+
+    if browser_config.wait_after_overlay_dismiss_min_seconds < 0:
+        raise ValueError("browser.wait_after_overlay_dismiss_min_seconds must be >= 0")
+
+    if browser_config.wait_after_overlay_dismiss_max_seconds < browser_config.wait_after_overlay_dismiss_min_seconds:
+        raise ValueError("browser.wait_after_overlay_dismiss_max_seconds must be >= browser.wait_after_overlay_dismiss_min_seconds")
+
+    if browser_config.delay_between_targets_min_seconds < 0:
+        raise ValueError("browser.delay_between_targets_min_seconds must be >= 0")
+
+    if browser_config.delay_between_targets_max_seconds < browser_config.delay_between_targets_min_seconds:
+        raise ValueError("browser.delay_between_targets_max_seconds must be >= browser.delay_between_targets_min_seconds")
+
+    if browser_config.retry_backoff_base_seconds <= 0 or browser_config.retry_backoff_max_seconds <= 0:
+        raise ValueError("browser retry backoff values must be > 0")
+
+    if browser_config.driver_lifecycle not in {"per_target", "per_run"}:
+        raise ValueError("browser.driver_lifecycle must be 'per_target' or 'per_run'")
+
+
 def validate_site_config_common(site_config):
     if not site_config.site:
         raise ValueError("site must not be empty")
@@ -22,6 +51,8 @@ def validate_site_config_common(site_config):
 
     if not site_config.datetime.timezone:
         raise ValueError("datetime.timezone must not be empty")
+
+    _validate_browser_config(site_config.browser)
 
 
 def validate_betano_site_config(site_config):

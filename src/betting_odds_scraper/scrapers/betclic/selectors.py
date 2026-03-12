@@ -11,3 +11,12 @@ PAGE_READY_MARKERS = (
     "cardEvent",
     "Resultado (Tempo Regulamentar)",
 )
+
+
+BLOCK_PAGE_MARKERS = (
+    "error 403",
+    "403 - forbidden",
+    "forbidden",
+    "err (0x2005002)",
+    "you don't have authorization to view this page",
+)

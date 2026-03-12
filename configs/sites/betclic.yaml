@@ -5,8 +5,16 @@ browser:
   headless: false
   language: "pt-PT"
   page_load_timeout_seconds: 60
-  wait_after_load_seconds: 8
-  wait_after_overlay_dismiss_seconds: 2
+  driver_lifecycle: "per_run"
+  wait_after_load_min_seconds: 5
+  wait_after_load_max_seconds: 9
+  wait_after_overlay_dismiss_min_seconds: 1
+  wait_after_overlay_dismiss_max_seconds: 3
+  delay_between_targets_min_seconds: 8
+  delay_between_targets_max_seconds: 18
+  retry_backoff_base_seconds: 30
+  retry_backoff_max_seconds: 120
+  abort_run_on_blocked: true
 
 output:
   default_format: "csv"

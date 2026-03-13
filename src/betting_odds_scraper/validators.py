@@ -126,3 +126,44 @@ def validate_betclic_site_config(site_config):
 
         if target.source_league_id <= 0:
             raise ValueError(f"Target {target.name}: source_league_id must be > 0")
+
+
+def validate_bwin_site_config(site_config):
+    if site_config.site != "bwin":
+        raise ValueError(f"Unsupported site value: {site_config.site}")
+
+    validate_site_config_common(site_config)
+
+    for target in site_config.targets:
+        if not target.target_id:
+            raise ValueError("Each target must have a target_id")
+
+        if not target.sport_id:
+            raise ValueError(f"Target {target.name}: sport_id must not be empty")
+
+        if not target.country_id:
+            raise ValueError(f"Target {target.name}: country_id must not be empty")
+
+        if not target.league_id:
+            raise ValueError(f"Target {target.name}: league_id must not be empty")
+
+        if not target.name:
+            raise ValueError("Each target must have a name")
+
+        if not target.sport_slug:
+            raise ValueError(f"Target {target.name}: sport_slug must not be empty")
+
+        if target.sport_id_numeric <= 0:
+            raise ValueError(f"Target {target.name}: sport_id_numeric must be > 0")
+
+        if not target.region_slug:
+            raise ValueError(f"Target {target.name}: region_slug must not be empty")
+
+        if target.region_id_numeric <= 0:
+            raise ValueError(f"Target {target.name}: region_id_numeric must be > 0")
+
+        if not target.competition_slug:
+            raise ValueError(f"Target {target.name}: competition_slug must not be empty")
+
+        if target.source_league_id <= 0:
+            raise ValueError(f"Target {target.name}: source_league_id must be > 0")

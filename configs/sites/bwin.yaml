@@ -1,0 +1,279 @@
+site: bwin
+base_url: "https://www.bwin.pt"
+
+browser:
+  headless: false
+  language: "pt-PT"
+  page_load_timeout_seconds: 60
+  driver_lifecycle: "per_target"
+  wait_after_load_min_seconds: 5
+  wait_after_load_max_seconds: 9
+  wait_after_overlay_dismiss_min_seconds: 1
+  wait_after_overlay_dismiss_max_seconds: 3
+  delay_between_targets_min_seconds: 8
+  delay_between_targets_max_seconds: 18
+  retry_backoff_base_seconds: 30
+  retry_backoff_max_seconds: 120
+  abort_run_on_blocked: true
+
+output:
+  default_format: "csv"
+  allowed_formats:
+    - "csv"
+    - "json"
+
+datetime:
+  timezone: "UTC"
+
+targets:
+  - name: "primeira_liga"
+    canonical:
+      target_id: "primeira_liga"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "primeira_liga"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "portugal"
+      region_id_numeric: 37
+      competition_slug: "liga-portugal"
+      source_league_id: 102851
+
+  - name: "liga_2"
+    canonical:
+      target_id: "liga_2"
+      sport_id: "football"
+      country_id: "portugal"
+      league_id: "liga_2"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "portugal"
+      region_id_numeric: 37
+      competition_slug: "liga-portugal-2"
+      source_league_id: 102206
+
+  - name: "laliga"
+    canonical:
+      target_id: "laliga"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "laliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "espanha"
+      region_id_numeric: 28
+      competition_slug: "la-liga"
+      source_league_id: 102829
+
+  - name: "segunda-division"
+    canonical:
+      target_id: "segunda_division"
+      sport_id: "football"
+      country_id: "spain"
+      league_id: "segunda_division"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "espanha"
+      region_id_numeric: 28
+      competition_slug: "laliga-2"
+      source_league_id: 102830
+
+  - name: "serie-a"
+    canonical:
+      target_id: "serie_a"
+      sport_id: "football"
+      country_id: "italy"
+      league_id: "serie_a"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "itália"
+      region_id_numeric: 20
+      competition_slug: "serie-a"
+      source_league_id: 102846
+
+  - name: "bundesliga"
+    canonical:
+      target_id: "bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "alemanha"
+      region_id_numeric: 17
+      competition_slug: "bundesliga"
+      source_league_id: 102842
+
+  - name: "2-bundesliga"
+    canonical:
+      target_id: "2_bundesliga"
+      sport_id: "football"
+      country_id: "germany"
+      league_id: "2_bundesliga"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "alemanha"
+      region_id_numeric: 17
+      competition_slug: "2-bundesliga"
+      source_league_id: 102845
+
+  - name: "premier_league"
+    canonical:
+      target_id: "premier_league"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "premier_league"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "inglaterra"
+      region_id_numeric: 14
+      competition_slug: "premier-league"
+      source_league_id: 102841
+
+  - name: "championship"
+    canonical:
+      target_id: "championship"
+      sport_id: "football"
+      country_id: "england"
+      league_id: "championship"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "inglaterra"
+      region_id_numeric: 14
+      competition_slug: "championship"
+      source_league_id: 102839
+
+  - name: "super-league-cn"
+    canonical:
+      target_id: "super_league_cn"
+      sport_id: "football"
+      country_id: "china"
+      league_id: "super_league"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "china"
+      region_id_numeric: 57
+      competition_slug: "super-liga"
+      source_league_id: 102717
+
+  - name: "pro-league"
+    canonical:
+      target_id: "saudi_pro_league"
+      sport_id: "football"
+      country_id: "saudi_arabia"
+      league_id: "saudi_pro_league"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "arábia-saudita"
+      region_id_numeric: 191
+      competition_slug: "saudi-pro-league"
+      source_league_id: 102212
+
+  - name: "brasileirao"
+    canonical:
+      target_id: "brasileirao_serie_a"
+      sport_id: "football"
+      country_id: "brazil"
+      league_id: "brasileirao_serie_a"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "brasil"
+      region_id_numeric: 33
+      competition_slug: "série-a"
+      source_league_id: 102838
+
+  - name: "league-1"
+    canonical:
+      target_id: "ligue_1"
+      sport_id: "football"
+      country_id: "france"
+      league_id: "ligue_1"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "frança"
+      region_id_numeric: 16
+      competition_slug: "ligue-1"
+      source_league_id: 102843
+
+  - name: "league-2"
+    canonical:
+      target_id: "ligue_2"
+      sport_id: "football"
+      country_id: "france"
+      league_id: "ligue_2"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "frança"
+      region_id_numeric: 16
+      competition_slug: "ligue-2"
+      source_league_id: 102376
+
+  - name: "super-league-1"
+    canonical:
+      target_id: "super_league_1"
+      sport_id: "football"
+      country_id: "greece"
+      league_id: "super_league_1"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "grécia"
+      region_id_numeric: 18
+      competition_slug: "super-league"
+      source_league_id: 102844
+
+  - name: "eredivisie"
+    canonical:
+      target_id: "eredivisie"
+      sport_id: "football"
+      country_id: "netherlands"
+      league_id: "eredivisie"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "países-baixos"
+      region_id_numeric: 36
+      competition_slug: "eredivisie"
+      source_league_id: 102847
+
+  - name: "liga-mx"
+    canonical:
+      target_id: "liga_mx"
+      sport_id: "football"
+      country_id: "mexico"
+      league_id: "liga_mx"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "méxico"
+      region_id_numeric: 43
+      competition_slug: "liga-mx-clausura"
+      source_league_id: 102375
+
+  - name: "super-lig"
+    canonical:
+      target_id: "super_lig"
+      sport_id: "football"
+      country_id: "turkey"
+      league_id: "super_lig"
+    site_data:
+      sport_slug: "futebol"
+      sport_id_numeric: 4
+      region_slug: "turquia"
+      region_id_numeric: 31
+      competition_slug: "super-lig"
+      source_league_id: 102832

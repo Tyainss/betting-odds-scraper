@@ -65,6 +65,22 @@ class BetanoSiteConfig(SiteConfigBase):
 
 
 @dataclass(frozen=True)
+class BwinTarget(CanonicalTarget):
+    name: str
+    sport_slug: str
+    sport_id_numeric: int
+    region_slug: str
+    region_id_numeric: int
+    competition_slug: str
+    source_league_id: int
+
+
+@dataclass(frozen=True)
+class BwinSiteConfig(SiteConfigBase):
+    targets: tuple[BwinTarget, ...]
+
+
+@dataclass(frozen=True)
 class BetclicTarget(CanonicalTarget):
     name: str
     sport_slug: str

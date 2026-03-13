@@ -8,6 +8,8 @@ from betting_odds_scraper.models import (
     BetanoTarget,
     BetclicSiteConfig,
     BetclicTarget,
+    BwinSiteConfig,
+    BwinTarget,
     BrowserConfig,
     DateTimeConfig,
     OutputConfig,
@@ -15,6 +17,7 @@ from betting_odds_scraper.models import (
 from betting_odds_scraper.validators import (
     validate_betano_site_config,
     validate_betclic_site_config,
+    validate_bwin_site_config,
 )
 
 
@@ -147,4 +150,42 @@ def load_betclic_site_config(file_path: str | Path) -> BetclicSiteConfig:
     )
 
     validate_betclic_site_config(site_config)
+    return site_config
+
+
+def load_bwin_site_config(file_path: str | Path) -> BwinSiteConfig:
+    data = _read_yaml_file(file_path)
+
+    browser_data = data["browser"]
+    output_data = data["output"]
+    datetime_data = data["datetime"]
+    targets_data = data["targets"]
+
+    targets = tuple(
+        BwinTarget(
+            target_id=target["canonical"]["target_id"],
+            sport_id=target["canonical"]["sport_id"],
+            country_id=target["canonical"]["country_id"],
+            league_id=target["canonical"]["league_id"],
+            name=target["name"],
+            sport_slug=target["site_data"]["sport_slug"],
+            sport_id_numeric=int(target["site_data"]["sport_id_numeric"]),
+            region_slug=target["site_data"]["region_slug"],
+            region_id_numeric=int(target["site_data"]["region_id_numeric"]),
+            competition_slug=target["site_data"]["competition_slug"],
+            source_league_id=int(target["site_data"]["source_league_id"]),
+        )
+        for target in targets_data
+    )
+
+    site_config = BwinSiteConfig(
+        site=data["site"],
+        base_url=data["base_url"],
+        browser=_build_browser_config(browser_data),
+        output=_build_output_config(output_data),
+        datetime=_build_datetime_config(datetime_data),
+        targets=targets,
+    )
+
+    validate_bwin_site_config(site_config)
     return site_config

@@ -6,6 +6,7 @@ Currently supported:
 
 * Betano
 * Betclic
+* Bwin
 
 ## What it does
 
@@ -28,7 +29,8 @@ betting-odds-scraper/
 │       ├── pipelines/
 │       ├── scrapers/
 │       │   ├── betano/
-│       │   └── betclic/
+│       │   ├── betclic/
+│       │   └── bwin/
 │       ├── storage/
 │       ├── config.py
 │       ├── logger.py
@@ -71,6 +73,12 @@ Site-specific:
 * reads `driver.page_source`
 * extracts the Angular `ng-state` payload
 * parses structured match / market data
+
+**Bwin**
+
+* loads the league page with Selenium
+* fetches the competition `widgetdata` payload from inside the browser context
+* parses structured fixture / market / option data from the returned JSON
 
 ## Installation
 
@@ -168,6 +176,12 @@ Betclic:
 
 ```bash
 uv run python scripts/run_betclic_once.py --target laliga
+```
+
+Bwin:
+
+```bash
+uv run python scripts/run_bwin_once.py --target primeira_liga
 ```
 
 ### 2. If ChromeDriver is not found automatically
@@ -283,11 +297,18 @@ Run Betclic:
 uv run python scripts/run_betclic_once.py
 ```
 
+Run Bwin:
+
+```bash
+uv run python scripts/run_bwin_once.py
+```
+
 Run a specific target:
 
 ```bash
 uv run python scripts/run_betano_once.py --target primeira_liga
 uv run python scripts/run_betclic_once.py --target laliga
+uv run python scripts/run_bwin_once.py --target primeira_liga
 ```
 
 Useful options:

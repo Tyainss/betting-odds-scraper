@@ -1,7 +1,7 @@
-
 from betting_odds_scraper.config import load_betano_site_config
 from betting_odds_scraper.pipelines.scrape_site import run_site_scrape
 from betting_odds_scraper.scrapers.betano.scraper import BetanoScraper
+
 
 def run_betano_scrape(
     config_path,
@@ -17,7 +17,7 @@ def run_betano_scrape(
     write_latest=True,
     append_history=False,
 ):
-    
+
     site_config = load_betano_site_config(config_path)
 
     return run_site_scrape(

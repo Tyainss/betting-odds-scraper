@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Protocol
-from contextlib import nullcontext
 import random
 import time
 
@@ -29,8 +28,7 @@ class ScrapeTargetProtocol(Protocol):
 class SiteScraperProtocol(Protocol):
     site_name: str
 
-    def scrape_target(self, target: ScrapeTargetProtocol) -> list[dict[str, Any]]:
-        ...
+    def scrape_target(self, target: ScrapeTargetProtocol) -> list[dict[str, Any]]: ...
 
 
 def _build_latest_output_path(base_dir, site_name, output_format):
@@ -70,15 +68,14 @@ def _filter_targets(targets, target_names):
         return targets
 
     selected_targets = tuple(
-        target
-        for target in targets
-        if target.name in target_names
+        target for target in targets if target.name in target_names
     )
 
     if not selected_targets:
         raise ValueError(f"No targets matched: {sorted(target_names)}")
 
     return selected_targets
+
 
 def _sleep_between_targets(browser_config, logger, site_name, target_name):
     delay_seconds = random.uniform(
@@ -108,7 +105,9 @@ def _compute_retry_delay_seconds(browser_config, attempt_number):
     )
 
 
-def _build_site_scraper(site_config, scraper_factory, chromedriver_path, headless_override):
+def _build_site_scraper(
+    site_config, scraper_factory, chromedriver_path, headless_override
+):
     driver = build_chrome_driver(
         browser_config=site_config.browser,
         chromedriver_path=chromedriver_path,
@@ -119,6 +118,7 @@ def _build_site_scraper(site_config, scraper_factory, chromedriver_path, headles
         site_config=site_config,
     )
     return driver, scraper
+
 
 def _scrape_target_with_retries(scraper, target, retries, retry_delay_seconds, logger):
     last_error = None
@@ -236,7 +236,6 @@ def run_site_scrape(
 
             if driver_lifecycle == "per_run":
                 scraper = shared_scraper
-                driver_context = nullcontext()
             else:
                 driver, scraper = _build_site_scraper(
                     site_config=site_config,
@@ -244,7 +243,6 @@ def run_site_scrape(
                     chromedriver_path=chromedriver_path,
                     headless_override=headless_override,
                 )
-                driver_context = nullcontext()
 
             try:
                 try:
@@ -259,14 +257,22 @@ def run_site_scrape(
                 except SiteBlockedError:
                     failed_targets.append(target.name)
                     stopped_reason = "site_blocked"
-                    logger.exception("Stopping run because site=%s returned a blocked page for target=%s", site_config.site, target.name)
+                    logger.exception(
+                        "Stopping run because site=%s returned a blocked page for target=%s",
+                        site_config.site,
+                        target.name,
+                    )
                     if site_config.browser.abort_run_on_blocked:
                         break
                     raise
                 except Exception:
                     failed_targets.append(target.name)
                     if continue_on_error:
-                        logger.exception("Skipping failed site=%s target=%s", site_config.site, target.name)
+                        logger.exception(
+                            "Skipping failed site=%s target=%s",
+                            site_config.site,
+                            target.name,
+                        )
                         continue
                     raise
 

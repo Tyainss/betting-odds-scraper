@@ -32,7 +32,10 @@ def _read_yaml_file(file_path: str | Path) -> dict[str, Any]:
 
     return data
 
-def _get_range(browser_data: dict[str, Any], prefix: str, legacy_key: str) -> tuple[float, float]:
+
+def _get_range(
+    browser_data: dict[str, Any], prefix: str, legacy_key: str
+) -> tuple[float, float]:
     legacy_value = float(browser_data.get(legacy_key, 0))
     min_value = float(browser_data.get(f"{prefix}_min_seconds", legacy_value))
     max_value = float(browser_data.get(f"{prefix}_max_seconds", legacy_value))
@@ -45,10 +48,12 @@ def _build_browser_config(browser_data: dict[str, Any]) -> BrowserConfig:
         prefix="wait_after_load",
         legacy_key="wait_after_load_seconds",
     )
-    wait_after_overlay_dismiss_min_seconds, wait_after_overlay_dismiss_max_seconds = _get_range(
-        browser_data=browser_data,
-        prefix="wait_after_overlay_dismiss",
-        legacy_key="wait_after_overlay_dismiss_seconds",
+    wait_after_overlay_dismiss_min_seconds, wait_after_overlay_dismiss_max_seconds = (
+        _get_range(
+            browser_data=browser_data,
+            prefix="wait_after_overlay_dismiss",
+            legacy_key="wait_after_overlay_dismiss_seconds",
+        )
     )
 
     return BrowserConfig(
@@ -59,10 +64,18 @@ def _build_browser_config(browser_data: dict[str, Any]) -> BrowserConfig:
         wait_after_load_max_seconds=wait_after_load_max_seconds,
         wait_after_overlay_dismiss_min_seconds=wait_after_overlay_dismiss_min_seconds,
         wait_after_overlay_dismiss_max_seconds=wait_after_overlay_dismiss_max_seconds,
-        delay_between_targets_min_seconds=float(browser_data.get("delay_between_targets_min_seconds", 0)),
-        delay_between_targets_max_seconds=float(browser_data.get("delay_between_targets_max_seconds", 0)),
-        retry_backoff_base_seconds=float(browser_data.get("retry_backoff_base_seconds", 30)),
-        retry_backoff_max_seconds=float(browser_data.get("retry_backoff_max_seconds", 120)),
+        delay_between_targets_min_seconds=float(
+            browser_data.get("delay_between_targets_min_seconds", 0)
+        ),
+        delay_between_targets_max_seconds=float(
+            browser_data.get("delay_between_targets_max_seconds", 0)
+        ),
+        retry_backoff_base_seconds=float(
+            browser_data.get("retry_backoff_base_seconds", 30)
+        ),
+        retry_backoff_max_seconds=float(
+            browser_data.get("retry_backoff_max_seconds", 120)
+        ),
         driver_lifecycle=browser_data.get("driver_lifecycle", "per_target"),
         abort_run_on_blocked=bool(browser_data.get("abort_run_on_blocked", True)),
     )

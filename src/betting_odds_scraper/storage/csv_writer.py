@@ -17,7 +17,6 @@ def write_rows_to_csv(rows, output_path):
         writer.writerows(rows)
 
 
-
 def append_rows_to_csv(rows, output_path):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)

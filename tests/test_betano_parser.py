@@ -18,6 +18,7 @@ def test_extract_initial_state_from_html():
     initial_state = extract_initial_state_from_html(html)
     assert initial_state["data"]["blocks"] == []
 
+
 def test_extract_rows_from_initial_state():
     initial_state = {
         "data": {
@@ -52,7 +53,7 @@ def test_extract_rows_from_initial_state():
     rows = extract_rows_from_initial_state(
         initial_state=initial_state,
         site_name="betano",
-       target_id="laliga",
+        target_id="laliga",
         sport_id="football",
         country_id="spain",
         league_id="laliga",

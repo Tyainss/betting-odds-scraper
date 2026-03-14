@@ -16,7 +16,9 @@ def build_chrome_driver(
     options.add_argument(f"--lang={browser_config.language}")
     options.add_argument("--disable-notifications")
 
-    run_headless = browser_config.headless if headless_override is None else headless_override
+    run_headless = (
+        browser_config.headless if headless_override is None else headless_override
+    )
 
     if run_headless:
         options.add_argument("--headless=new")

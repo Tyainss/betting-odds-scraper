@@ -84,14 +84,24 @@ class BwinScraper:
             ) from exc
 
     def _wait_for_page_ready(self, target_name):
-        wait = WebDriverWait(self.driver, self.site_config.browser.page_load_timeout_seconds)
+        wait = WebDriverWait(
+            self.driver, self.site_config.browser.page_load_timeout_seconds
+        )
 
         try:
-            wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+            wait.until(
+                lambda driver: (
+                    driver.execute_script("return document.readyState") == "complete"
+                )
+            )
         except TimeoutException as exc:
             if self._page_is_blocked(self.driver.page_source):
-                raise SiteBlockedError(f"Bwin blocked access for target={target_name}") from exc
-            raise TransientNavigationError(f"Bwin page did not become ready for target={target_name}") from exc
+                raise SiteBlockedError(
+                    f"Bwin blocked access for target={target_name}"
+                ) from exc
+            raise TransientNavigationError(
+                f"Bwin page did not become ready for target={target_name}"
+            ) from exc
 
         if self._page_is_blocked(self.driver.page_source):
             raise SiteBlockedError(f"Bwin blocked access for target={target_name}")
@@ -129,7 +139,9 @@ class BwinScraper:
         )
 
         if result.get("error"):
-            raise TransientNavigationError(f"Bwin widget fetch failed: {result['error']}")
+            raise TransientNavigationError(
+                f"Bwin widget fetch failed: {result['error']}"
+            )
 
         body = result.get("body") or ""
         content_type = (result.get("content_type") or "").lower()
@@ -166,4 +178,6 @@ class BwinScraper:
             html_path.write_text(self.driver.page_source, encoding="utf-8")
             self.logger.info("Saved debug artifacts for target=%s", target_name)
         except Exception:
-            self.logger.exception("Failed to save debug artifacts for target=%s", target_name)
+            self.logger.exception(
+                "Failed to save debug artifacts for target=%s", target_name
+            )

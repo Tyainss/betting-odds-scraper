@@ -10,7 +10,6 @@ def write_rows_to_json(rows, output_path):
         json.dump(rows, file, ensure_ascii=False, indent=2)
 
 
-
 def append_rows_to_json(rows, output_path):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)

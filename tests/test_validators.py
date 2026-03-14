@@ -10,7 +10,10 @@ from betting_odds_scraper.models import (
     DateTimeConfig,
     OutputConfig,
 )
-from betting_odds_scraper.validators import validate_betano_site_config, validate_betclic_site_config
+from betting_odds_scraper.validators import (
+    validate_betano_site_config,
+    validate_betclic_site_config,
+)
 
 
 def build_site_config(**overrides):
@@ -59,7 +62,6 @@ def build_site_config(**overrides):
     return config
 
 
-
 def test_validate_betano_site_config_accepts_valid_config():
     site_config = build_site_config()
     validate_betano_site_config(site_config)
@@ -85,7 +87,6 @@ def test_validate_betano_site_config_rejects_invalid_default_format():
 
     with pytest.raises(ValueError, match="output.default_format"):
         validate_betano_site_config(site_config)
-
 
 
 def test_validate_betclic_site_config_accepts_valid_config():

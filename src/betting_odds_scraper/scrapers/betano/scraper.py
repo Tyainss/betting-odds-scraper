@@ -4,7 +4,6 @@ from pathlib import Path
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.parser import (
@@ -79,7 +78,6 @@ class BetanoScraper:
             self._save_debug_artifacts(target.name)
             raise
 
-
     def _dismiss_overlays(self):
         for xpath in COOKIE_ACCEPT_XPATHS:
             try:
@@ -93,7 +91,6 @@ class BetanoScraper:
         wait = WebDriverWait(self.driver, timeout)
         wait.until(lambda driver: 'window["initial_state"]' in driver.page_source)
         self.logger.info("Page ready for target=%s using initial_state", target_name)
-    
 
     def _save_debug_artifacts(self, target_name):
         self.debug_dir.mkdir(parents=True, exist_ok=True)
@@ -106,7 +103,9 @@ class BetanoScraper:
             html_path.write_text(self.driver.page_source, encoding="utf-8")
             self.logger.info("Saved debug artifacts for target=%s", target_name)
         except Exception:
-            self.logger.exception("Failed to save debug artifacts for target=%s", target_name)
+            self.logger.exception(
+                "Failed to save debug artifacts for target=%s", target_name
+            )
 
     def _sleep_random(self, min_seconds, max_seconds):
         if max_seconds <= 0:

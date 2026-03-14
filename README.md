@@ -86,7 +86,7 @@ Site-specific:
 
 Before running the scraper, make sure you have:
 
-* Python 3.12 or newer
+* Python 3.11 or newer
 * `uv` installed
 * Google Chrome installed
 
@@ -98,7 +98,7 @@ Check that Python is installed:
 python --version
 ```
 
-If Python is not installed yet, install Python 3.12 or newer first.
+If Python is not installed yet, install Python 3.11 or newer first.
 
 ### 2. Install `uv`
 

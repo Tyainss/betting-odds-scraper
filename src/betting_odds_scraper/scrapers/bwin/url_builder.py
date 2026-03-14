@@ -1,7 +1,9 @@
 from betting_odds_scraper.models import BwinSiteConfig, BwinTarget
 
 
-DEFAULT_WIDGET_ID = "/mobilesports-v1.0/layout/layout_standards/modules/competition/defaultcontainer"
+DEFAULT_WIDGET_ID = (
+    "/mobilesports-v1.0/layout/layout_standards/modules/competition/defaultcontainer"
+)
 
 
 def build_bwin_league_url(

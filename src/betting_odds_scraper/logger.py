@@ -1,8 +1,9 @@
 import logging
 from pathlib import Path
 
+
 def get_logger(name):
-     return logging.getLogger(name)
+    return logging.getLogger(name)
 
 
 def configure_logging(log_level="INFO", log_file_path=None):

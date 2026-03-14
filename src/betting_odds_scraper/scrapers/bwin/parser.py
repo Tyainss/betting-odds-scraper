@@ -3,7 +3,9 @@ from datetime import datetime, timezone
 from betting_odds_scraper.models import OddsRow
 
 
-MATCHES_WIDGET_ID = "/mobilesports-v1.0/layout/layout_standards/modules/competition/matches"
+MATCHES_WIDGET_ID = (
+    "/mobilesports-v1.0/layout/layout_standards/modules/competition/matches"
+)
 MATCH_RESULT_MARKET_NAMES = {
     "Resultado do Jogo - 2GV",
     "Resultado 1X2",
@@ -136,7 +138,9 @@ def extract_rows_from_bwin_widget_data(
         if fixture_dt_utc is not None:
             fixture_date = fixture_dt_utc.isoformat()
             match_date = fixture_dt_utc.date().isoformat()
-            match_time = fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes")
+            match_time = (
+                fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes")
+            )
 
         live = fixture.get("stage") != "PreMatch" or bool(
             fixture.get("scoreboard", {}).get("started", False)

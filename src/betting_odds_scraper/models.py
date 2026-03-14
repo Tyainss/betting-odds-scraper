@@ -33,6 +33,7 @@ class OutputConfig:
 class DateTimeConfig:
     timezone: str
 
+
 @dataclass(frozen=True)
 class SiteConfigBase:
     site: str
@@ -92,6 +93,7 @@ class BetclicTarget(CanonicalTarget):
 @dataclass(frozen=True)
 class BetclicSiteConfig(SiteConfigBase):
     targets: tuple[BetclicTarget, ...]
+
 
 @dataclass(frozen=True)
 class OddsRow:

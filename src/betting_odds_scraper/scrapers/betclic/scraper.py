@@ -81,7 +81,9 @@ class BetclicScraper:
             raise
         except Exception as exc:
             self._save_debug_artifacts(target.name)
-            raise PageStructureChangedError(f"Failed to parse Betclic page for target={target.name}") from exc
+            raise PageStructureChangedError(
+                f"Failed to parse Betclic page for target={target.name}"
+            ) from exc
 
     def _dismiss_overlays(self):
         for selector in COOKIE_ACCEPT_SELECTORS:
@@ -98,21 +100,32 @@ class BetclicScraper:
                 continue
 
     def _wait_for_page_ready(self, target_name):
-        wait = WebDriverWait(self.driver, self.site_config.browser.page_load_timeout_seconds)
+        wait = WebDriverWait(
+            self.driver, self.site_config.browser.page_load_timeout_seconds
+        )
 
         try:
             wait.until(
-                lambda driver: self._page_has_ready_markers(driver.page_source) or self._page_is_blocked(driver.page_source)
+                lambda driver: (
+                    self._page_has_ready_markers(driver.page_source)
+                    or self._page_is_blocked(driver.page_source)
+                )
             )
         except TimeoutException as exc:
             if self._page_is_blocked(self.driver.page_source):
-                raise SiteBlockedError(f"Betclic blocked access for target={target_name}") from exc
-            raise TransientNavigationError(f"Betclic page did not become ready for target={target_name}") from exc
+                raise SiteBlockedError(
+                    f"Betclic blocked access for target={target_name}"
+                ) from exc
+            raise TransientNavigationError(
+                f"Betclic page did not become ready for target={target_name}"
+            ) from exc
 
         if self._page_is_blocked(self.driver.page_source):
             raise SiteBlockedError(f"Betclic blocked access for target={target_name}")
 
-        self.logger.info("Page ready for target=%s using ng-state/card markers", target_name)
+        self.logger.info(
+            "Page ready for target=%s using ng-state/card markers", target_name
+        )
 
     def _page_has_ready_markers(self, page_source):
         return all(marker in page_source for marker in PAGE_READY_MARKERS)
@@ -128,7 +141,6 @@ class BetclicScraper:
         delay_seconds = random.uniform(min_seconds, max_seconds)
         time.sleep(delay_seconds)
 
-
     def _save_debug_artifacts(self, target_name):
         self.debug_dir.mkdir(parents=True, exist_ok=True)
 
@@ -140,4 +152,6 @@ class BetclicScraper:
             html_path.write_text(self.driver.page_source, encoding="utf-8")
             self.logger.info("Saved debug artifacts for target=%s", target_name)
         except Exception:
-            self.logger.exception("Failed to save debug artifacts for target=%s", target_name)
+            self.logger.exception(
+                "Failed to save debug artifacts for target=%s", target_name
+            )

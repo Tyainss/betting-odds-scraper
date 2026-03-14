@@ -1,4 +1,3 @@
-
 from betting_odds_scraper.models import BetanoSiteConfig, BetanoTarget
 
 

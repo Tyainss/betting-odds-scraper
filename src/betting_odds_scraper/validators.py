@@ -5,22 +5,40 @@ def _validate_browser_config(browser_config):
     if browser_config.wait_after_load_min_seconds < 0:
         raise ValueError("browser.wait_after_load_min_seconds must be >= 0")
 
-    if browser_config.wait_after_load_max_seconds < browser_config.wait_after_load_min_seconds:
-        raise ValueError("browser.wait_after_load_max_seconds must be >= browser.wait_after_load_min_seconds")
+    if (
+        browser_config.wait_after_load_max_seconds
+        < browser_config.wait_after_load_min_seconds
+    ):
+        raise ValueError(
+            "browser.wait_after_load_max_seconds must be >= browser.wait_after_load_min_seconds"
+        )
 
     if browser_config.wait_after_overlay_dismiss_min_seconds < 0:
         raise ValueError("browser.wait_after_overlay_dismiss_min_seconds must be >= 0")
 
-    if browser_config.wait_after_overlay_dismiss_max_seconds < browser_config.wait_after_overlay_dismiss_min_seconds:
-        raise ValueError("browser.wait_after_overlay_dismiss_max_seconds must be >= browser.wait_after_overlay_dismiss_min_seconds")
+    if (
+        browser_config.wait_after_overlay_dismiss_max_seconds
+        < browser_config.wait_after_overlay_dismiss_min_seconds
+    ):
+        raise ValueError(
+            "browser.wait_after_overlay_dismiss_max_seconds must be >= browser.wait_after_overlay_dismiss_min_seconds"
+        )
 
     if browser_config.delay_between_targets_min_seconds < 0:
         raise ValueError("browser.delay_between_targets_min_seconds must be >= 0")
 
-    if browser_config.delay_between_targets_max_seconds < browser_config.delay_between_targets_min_seconds:
-        raise ValueError("browser.delay_between_targets_max_seconds must be >= browser.delay_between_targets_min_seconds")
+    if (
+        browser_config.delay_between_targets_max_seconds
+        < browser_config.delay_between_targets_min_seconds
+    ):
+        raise ValueError(
+            "browser.delay_between_targets_max_seconds must be >= browser.delay_between_targets_min_seconds"
+        )
 
-    if browser_config.retry_backoff_base_seconds <= 0 or browser_config.retry_backoff_max_seconds <= 0:
+    if (
+        browser_config.retry_backoff_base_seconds <= 0
+        or browser_config.retry_backoff_max_seconds <= 0
+    ):
         raise ValueError("browser retry backoff values must be > 0")
 
     if browser_config.driver_lifecycle not in {"per_target", "per_run"}:
@@ -33,7 +51,7 @@ def validate_site_config_common(site_config):
 
     if not site_config.base_url:
         raise ValueError("base_url must not be empty")
-    
+
     if not site_config.targets:
         raise ValueError("At least one target must be defined")
 
@@ -90,7 +108,9 @@ def validate_betano_site_config(site_config):
             raise ValueError(f"Target {target.name}: source_league_id must be > 0")
 
         if " " in target.league_slug:
-            raise ValueError(f"Target {target.name}: league_slug must not contain spaces")
+            raise ValueError(
+                f"Target {target.name}: league_slug must not contain spaces"
+            )
 
 
 def validate_betclic_site_config(site_config):
@@ -122,7 +142,9 @@ def validate_betclic_site_config(site_config):
             raise ValueError(f"Target {target.name}: sport_code must not be empty")
 
         if not target.competition_slug:
-            raise ValueError(f"Target {target.name}: competition_slug must not be empty")
+            raise ValueError(
+                f"Target {target.name}: competition_slug must not be empty"
+            )
 
         if target.source_league_id <= 0:
             raise ValueError(f"Target {target.name}: source_league_id must be > 0")
@@ -163,7 +185,9 @@ def validate_bwin_site_config(site_config):
             raise ValueError(f"Target {target.name}: region_id_numeric must be > 0")
 
         if not target.competition_slug:
-            raise ValueError(f"Target {target.name}: competition_slug must not be empty")
+            raise ValueError(
+                f"Target {target.name}: competition_slug must not be empty"
+            )
 
         if target.source_league_id <= 0:
             raise ValueError(f"Target {target.name}: source_league_id must be > 0")

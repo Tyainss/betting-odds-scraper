@@ -17,19 +17,29 @@ def test_extract_rows_from_bwin_widget_data():
                                                 "participants": [
                                                     {
                                                         "name": {"value": "Vitória SC"},
-                                                        "properties": {"type": "HomeTeam"},
+                                                        "properties": {
+                                                            "type": "HomeTeam"
+                                                        },
                                                     },
                                                     {
-                                                        "name": {"value": "FC Famalicão"},
-                                                        "properties": {"type": "AwayTeam"},
+                                                        "name": {
+                                                            "value": "FC Famalicão"
+                                                        },
+                                                        "properties": {
+                                                            "type": "AwayTeam"
+                                                        },
                                                     },
                                                 ],
                                                 "optionMarkets": [
                                                     {
-                                                        "name": {"value": "Resultado do Jogo - 2GV"},
+                                                        "name": {
+                                                            "value": "Resultado do Jogo - 2GV"
+                                                        },
                                                         "options": [
                                                             {
-                                                                "name": {"value": "Vitória SC"},
+                                                                "name": {
+                                                                    "value": "Vitória SC"
+                                                                },
                                                                 "price": {"odds": 2.10},
                                                             },
                                                             {
@@ -37,7 +47,9 @@ def test_extract_rows_from_bwin_widget_data():
                                                                 "price": {"odds": 3.30},
                                                             },
                                                             {
-                                                                "name": {"value": "FC Famalicão"},
+                                                                "name": {
+                                                                    "value": "FC Famalicão"
+                                                                },
                                                                 "price": {"odds": 3.40},
                                                             },
                                                         ],

@@ -128,7 +128,9 @@ def extract_rows_from_ng_state(
         if fixture_dt_utc is not None:
             fixture_date = fixture_dt_utc.isoformat()
             match_date = fixture_dt_utc.date().isoformat()
-            match_time = fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes")
+            match_time = (
+                fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes")
+            )
 
         rows.append(
             OddsRow(

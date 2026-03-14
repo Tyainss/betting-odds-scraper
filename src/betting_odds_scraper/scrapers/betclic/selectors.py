@@ -1,4 +1,3 @@
-
 COOKIE_ACCEPT_SELECTORS = (
     "#popin_tc_privacy_button_2",
     "#popin_tc_privacy_btn_close",

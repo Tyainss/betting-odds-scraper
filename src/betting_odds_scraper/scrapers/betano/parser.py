@@ -14,7 +14,7 @@ INITIAL_STATE_PATTERN = re.compile(
 def _get_zoneinfo(timezone_name):
     if timezone_name.upper() == "UTC":
         return timezone.utc
-    
+
     return ZoneInfo(timezone_name)
 
 
@@ -24,6 +24,7 @@ def _parse_start_time_millis(start_time_millis, source_timezone):
     utc_dt = datetime.fromtimestamp(start_time_millis / 1000, tz=timezone.utc)
     local_dt = utc_dt.astimezone(source_tz)
     return local_dt.astimezone(timezone.utc)
+
 
 def extract_initial_state_from_html(html):
     match = INITIAL_STATE_PATTERN.search(html)
@@ -63,6 +64,7 @@ def _extract_teams(event):
         return home_team, away_team
 
     return None, None
+
 
 def extract_rows_from_initial_state(
     initial_state,
@@ -105,7 +107,11 @@ def extract_rows_from_initial_state(
                 )
                 fixture_date = fixture_dt_utc.isoformat()
                 match_date = fixture_dt_utc.date().isoformat()
-                match_time = fixture_dt_utc.time().replace(tzinfo=None).isoformat(timespec="minutes")
+                match_time = (
+                    fixture_dt_utc.time()
+                    .replace(tzinfo=None)
+                    .isoformat(timespec="minutes")
+                )
 
             rows.append(
                 OddsRow(

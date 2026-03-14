@@ -4,7 +4,6 @@ from pathlib import Path
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from betting_odds_scraper.logger import get_logger
 from betting_odds_scraper.scrapers.betano.parser import (

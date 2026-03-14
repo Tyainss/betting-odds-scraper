@@ -1,8 +1,6 @@
 import csv
 import json
 
-import pytest
-
 from betting_odds_scraper.storage.csv_writer import (
     append_rows_to_csv,
     write_rows_to_csv,

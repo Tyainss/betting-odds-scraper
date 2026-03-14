@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Protocol
-from contextlib import nullcontext
 import random
 import time
 
@@ -236,7 +235,6 @@ def run_site_scrape(
 
             if driver_lifecycle == "per_run":
                 scraper = shared_scraper
-                driver_context = nullcontext()
             else:
                 driver, scraper = _build_site_scraper(
                     site_config=site_config,
@@ -244,7 +242,6 @@ def run_site_scrape(
                     chromedriver_path=chromedriver_path,
                     headless_override=headless_override,
                 )
-                driver_context = nullcontext()
 
             try:
                 try:

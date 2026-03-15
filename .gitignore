@@ -1,6 +1,9 @@
 # CSV file containing the scraped data
 *.csv
 
+# Ignore ad-hoc scripts folder
+ad-hoc/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

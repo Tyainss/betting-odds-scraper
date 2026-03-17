@@ -13,8 +13,8 @@ def run_legacy_site(site_name: str) -> None:
     args = _parse_args(default_config_path=site_definition.default_config_path)
 
     print(
-        f"[deprecated] This legacy script entrypoint is still supported, "
-        f"but please migrate to: uv run odds scrape {site_name} ..."
+        f"\n[deprecated] This legacy script entrypoint is still supported, "
+        f"but please migrate to: 'uv run odds scrape {site_name} ...'\n"
     )
 
     request = ScrapeRunRequest(

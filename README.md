@@ -25,6 +25,8 @@ betting-odds-scraper/
 ├── scripts/
 ├── src/
 │   └── betting_odds_scraper/
+│       ├── cli/
+│       │   ├── commands/
 │       ├── browser/
 │       ├── pipelines/
 │       ├── scrapers/
@@ -159,7 +161,7 @@ For most users, these are the only commands you need:
 
 ```bash
 uv sync
-uv run python scripts/run_betano_once.py --target primeira_liga
+uv run odds scrape betano --target primeira_liga
 ```
 
 After `uv sync`, run project commands with `uv run ...`.
@@ -169,19 +171,19 @@ After `uv sync`, run project commands with `uv run ...`.
 Betano:
 
 ```bash
-uv run python scripts/run_betano_once.py --target primeira_liga
+uv run odds scrape betano --target primeira_liga
 ```
 
 Betclic:
 
 ```bash
-uv run python scripts/run_betclic_once.py --target laliga
+uv run odds scrape betclic --target laliga
 ```
 
 Bwin:
 
 ```bash
-uv run python scripts/run_bwin_once.py --target primeira_liga
+uv run odds scrape bwin --target primeira_liga
 ```
 
 ### 2. If ChromeDriver is not found automatically
@@ -191,7 +193,7 @@ Usually, having Google Chrome installed is enough.
 Selenium will often handle the browser driver automatically. If that does not work in your environment, run the same command with an explicit driver path:
 
 ```bash
-uv run python scripts/run_betano_once.py --chromedriver-path "C:/path/to/chromedriver.exe"
+uv run odds scrape betano --chromedriver-path "C:/path/to/chromedriver.exe"
 ```
 
 ### 3. Where outputs are written
@@ -288,27 +290,27 @@ Notes:
 Run Betano:
 
 ```bash
-uv run python scripts/run_betano_once.py
+uv run odds scrape betano
 ```
 
 Run Betclic:
 
 ```bash
-uv run python scripts/run_betclic_once.py
+uv run odds scrape betclic
 ```
 
 Run Bwin:
 
 ```bash
-uv run python scripts/run_bwin_once.py
+uv run odds scrape bwin
 ```
 
 Run a specific target:
 
 ```bash
-uv run python scripts/run_betano_once.py --target primeira_liga
-uv run python scripts/run_betclic_once.py --target laliga
-uv run python scripts/run_bwin_once.py --target primeira_liga
+uv run odds scrape betano --target primeira_liga
+uv run odds scrape betclic --target laliga
+uv run odds scrape bwin --target primeira_liga
 ```
 
 Useful options:
@@ -375,6 +377,7 @@ To add another site cleanly:
    * `parser.py`
    * `url_builder.py`
    * `selectors.py` if needed
+
 3. add a site config YAML under `configs/sites/`
 4. add a pipeline entrypoint under `pipelines/`
 5. add tests for parser / validation behavior

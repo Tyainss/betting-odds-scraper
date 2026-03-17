@@ -11,7 +11,7 @@ def run_betclic_scrape(
     split_by_target=False,
     target_names=None,
     headless_override=None,
-    continue_on_error=False,
+    continue_on_error=True,
     retries=1,
     retry_delay_seconds=2,
     write_latest=True,

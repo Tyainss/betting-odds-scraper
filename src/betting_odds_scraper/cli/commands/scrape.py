@@ -53,8 +53,8 @@ def _build_site_command(site_name: str):
             help="Force visible browser window.",
         ),
         continue_on_error: bool = typer.Option(
-            False,
-            "--continue-on-error",
+            True,
+            "--continue-on-error/--fail-fast",
             help="Keep running remaining targets if one target fails.",
         ),
         retries: int = typer.Option(

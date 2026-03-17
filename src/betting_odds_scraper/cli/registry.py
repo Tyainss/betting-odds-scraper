@@ -40,7 +40,9 @@ def get_site_definition(site_name: str) -> SiteDefinition:
         return SITE_REGISTRY[site_name]
     except KeyError as exc:
         supported = ", ".join(sorted(SITE_REGISTRY))
-        raise ValueError(f"Unsupported site '{site_name}'. Supported sites: {supported}") from exc
+        raise ValueError(
+            f"Unsupported site '{site_name}'. Supported sites: {supported}"
+        ) from exc
 
 
 def get_supported_sites() -> list[str]:

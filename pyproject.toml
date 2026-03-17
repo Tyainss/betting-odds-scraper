@@ -18,8 +18,14 @@ dependencies = [
 odds = "betting_odds_scraper.cli.app:main"
 
 [build-system]
-requires = ["uv_build>=0.9.17,<0.10.0"]
-build-backend = "uv_build"
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+dev-mode-dirs = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/betting_odds_scraper"]
 
 [dependency-groups]
 dev = [
